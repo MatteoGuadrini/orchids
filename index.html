@@ -1,489 +1,1668 @@
 <!DOCTYPE html>
 <html lang="en" data-mode="dark">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orchids — a code theme drawn from five orchid species</title>
-<meta name="description" content="Orchids: light & dark code themes for VS Code, Zed, IntelliJ, iTerm2, Alacritty, Ghostty, Kitty and Windows Terminal — sampled from Phalaenopsis, Vanda, Cattleya, Paphiopedilum and Oncidium.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23FA8FC5'%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(72 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(144 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(216 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(288 16 16)'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23F2C566'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:ital,wght@0,400..600;1,400..600&family=JetBrains+Mono:ital,wght@0,400..700;1,400..600&display=swap" rel="stylesheet">
-<script>
-/* ============================================================
-   ORCHIDS — single source of truth for every color on this page
-   and in every downloadable theme file.
-   ============================================================ */
-const TOKENS = {
-  dark: {
-    name: 'Orchids Dark',
-    bg: '#1A1322', panel: '#211831', panel2: '#281D3A', lineHl: '#241A33',
-    selection: '#53307A', cursor: '#FF8FC5',
-    fg: '#EFE7F6', fgSoft: '#CBBCE2', comment: '#7E6F96',
-    line: '#342647', lineStrong: '#4B3968',
-    kw: '#B79CF5', fn: '#FA8FC5', type: '#8FB2FF', str: '#A9CC7E', num: '#F2C566',
-    op: '#CBBCE2', punc: '#9C8CB8', deco: '#E8B06A', esc: '#7FD4CB', self: '#DCA9F2',
-    error: '#FF6B7F', warning: '#F2C566', added: '#A9CC7E', removed: '#FF8A96', changed: '#B79CF5',
-    lno: '#5A4B72', lna: '#BAA9D9',
-    ansi: ['#2B2140','#E5576E','#A9CC7E','#F2C566','#8FB2FF','#F07FC0','#7FD4CB','#D9CFE8',
-           '#5A4B72','#FF7A87','#C0E39A','#FFD98A','#AEC6FF','#FFA5D6','#9ADFD8','#F2ECF8']
-  },
-  light: {
-    name: 'Orchids Light',
-    bg: '#FBF7F1', panel: '#F4EDE3', panel2: '#EDE4D6', lineHl: '#F1E7DC',
-    selection: '#E3D3F4', cursor: '#C0347E',
-    fg: '#372542', fgSoft: '#5E4B70', comment: '#8B7A99',
-    line: '#E6DCCF', lineStrong: '#D2C3B0',
-    kw: '#6D48D6', fn: '#C0347E', type: '#315BC4', str: '#5E7C2B', num: '#9E650F',
-    op: '#5E4B70', punc: '#8A7899', deco: '#8F5E10', esc: '#0E7C72', self: '#8A3EB5',
-    error: '#C2334A', warning: '#9E650F', added: '#4E7020', removed: '#C2334A', changed: '#6D48D6',
-    lno: '#C3B4A6', lna: '#5E4B70',
-    ansi: ['#3A2C44','#C2334A','#4E7020','#9E650F','#315BC4','#C0347E','#0E7C72','#E9E1EE',
-           '#8B7A99','#DE4A5F','#5E7C2B','#B87D0A','#4A6FD8','#D6488F','#2B948A','#F4EEE4']
-  }
-};
-(function () {
-  /* inject palette variables before first paint — the site renders in its own theme */
-  function vars(t) {
-    let s = `--t-bg:${t.bg};--t-panel:${t.panel};--t-panel2:${t.panel2};--t-linehl:${t.lineHl};` +
-      `--t-line:${t.line};--t-line-strong:${t.lineStrong};--t-sel:${t.selection};--t-cursor:${t.cursor};` +
-      `--t-fg:${t.fg};--t-fg-soft:${t.fgSoft};--t-comment:${t.comment};` +
-      `--t-kw:${t.kw};--t-fn:${t.fn};--t-type:${t.type};--t-str:${t.str};--t-num:${t.num};` +
-      `--t-op:${t.op};--t-punc:${t.punc};--t-deco:${t.deco};--t-esc:${t.esc};--t-self:${t.self};` +
-      `--t-error:${t.error};--t-warning:${t.warning};--t-added:${t.added};--t-removed:${t.removed};--t-changed:${t.changed};` +
-      `--t-lno:${t.lno};--t-lna:${t.lna};` +
-      t.ansi.map((c, i) => `--a${i}:${c}`).join(';');
-    return s;
-  }
-  const st = document.createElement('style');
-  st.textContent =
-    `html[data-mode="dark"],.pm-dark{${vars(TOKENS.dark)}}` +
-    `html[data-mode="light"],.pm-light{${vars(TOKENS.light)}}`;
-  document.head.appendChild(st);
-  /* mode before paint — no flash */
-  let m = 'dark';
-  try { m = localStorage.getItem('orchids-mode') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); } catch (e) {}
-  document.documentElement.dataset.mode = m;
-})();
-</script>
-<style>
-/* ============================== base ============================== */
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-:root {
-  --serif: 'Fraunces', Georgia, serif;
-  --sans: 'Instrument Sans', 'Helvetica Neue', sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
-}
-body {
-  margin: 0; background: var(--t-bg); color: var(--t-fg);
-  font-family: var(--sans); font-size: 16px; line-height: 1.6;
-  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
-  transition: background .35s ease, color .35s ease;
-}
-::selection { background: var(--t-sel); }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: var(--t-line-strong); border-radius: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-a { color: inherit; }
-button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-:focus-visible { outline: 2px solid var(--t-fn); outline-offset: 3px; border-radius: 4px; }
-.wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); }
-.mono { font-family: var(--mono); }
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover, user-scalable=yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>Orchids — a code theme drawn from five orchid species</title>
+  <meta name="description"
+    content="Orchids: light & dark code themes for VS Code, Zed, IntelliJ, iTerm2, Alacritty, Ghostty, Kitty and Windows Terminal.">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23FA8FC5'%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(72 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(144 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(216 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(288 16 16)'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23F2C566'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23FA8FC5'%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(72 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(144 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(216 16 16)'/%3E%3Cellipse cx='16' cy='7' rx='4' ry='6.5' transform='rotate(288 16 16)'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23F2C566'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:ital,wght@0,400..600;1,400..600&family=JetBrains+Mono:ital,wght@0,400..700;1,400..600&display=swap"
+    rel="stylesheet">
+  <script>
+    /* ============================================================
+       ORCHIDS — single source of truth for every color on this page
+       and in every downloadable theme file.
+       ============================================================ */
+    const TOKENS = {
+      dark: {
+        name: 'Orchids Dark',
+        bg: '#1A1322', panel: '#211831', panel2: '#281D3A', lineHl: '#241A33',
+        selection: '#53307A', cursor: '#FF8FC5',
+        fg: '#EFE7F6', fgSoft: '#CBBCE2', comment: '#7E6F96',
+        line: '#342647', lineStrong: '#4B3968',
+        kw: '#B79CF5', fn: '#FA8FC5', type: '#8FB2FF', str: '#A9CC7E', num: '#F2C566',
+        op: '#CBBCE2', punc: '#9C8CB8', deco: '#E8B06A', esc: '#7FD4CB', self: '#DCA9F2',
+        error: '#FF6B7F', warning: '#F2C566', added: '#A9CC7E', removed: '#FF8A96', changed: '#B79CF5',
+        lno: '#5A4B72', lna: '#BAA9D9',
+        ansi: ['#2B2140', '#E5576E', '#A9CC7E', '#F2C566', '#8FB2FF', '#F07FC0', '#7FD4CB', '#D9CFE8',
+          '#5A4B72', '#FF7A87', '#C0E39A', '#FFD98A', '#AEC6FF', '#FFA5D6', '#9ADFD8', '#F2ECF8']
+      },
+      light: {
+        name: 'Orchids Light',
+        bg: '#FBF7F1', panel: '#F4EDE3', panel2: '#EDE4D6', lineHl: '#F1E7DC',
+        selection: '#E3D3F4', cursor: '#C0347E',
+        fg: '#372542', fgSoft: '#5E4B70', comment: '#8B7A99',
+        line: '#E6DCCF', lineStrong: '#D2C3B0',
+        kw: '#6D48D6', fn: '#C0347E', type: '#315BC4', str: '#5E7C2B', num: '#9E650F',
+        op: '#5E4B70', punc: '#8A7899', deco: '#8F5E10', esc: '#0E7C72', self: '#8A3EB5',
+        error: '#C2334A', warning: '#9E650F', added: '#4E7020', removed: '#C2334A', changed: '#6D48D6',
+        lno: '#C3B4A6', lna: '#5E4B70',
+        ansi: ['#3A2C44', '#C2334A', '#4E7020', '#9E650F', '#315BC4', '#C0347E', '#0E7C72', '#E9E1EE',
+          '#8B7A99', '#DE4A5F', '#5E7C2B', '#B87D0A', '#4A6FD8', '#D6488F', '#2B948A', '#F4EEE4']
+      }
+    };
+    (function () {
+      /* inject palette variables before first paint — the site renders in its own theme */
+      function vars(t) {
+        let s = `--t-bg:${t.bg};--t-panel:${t.panel};--t-panel2:${t.panel2};--t-linehl:${t.lineHl};` +
+          `--t-line:${t.line};--t-line-strong:${t.lineStrong};--t-sel:${t.selection};--t-cursor:${t.cursor};` +
+          `--t-fg:${t.fg};--t-fg-soft:${t.fgSoft};--t-comment:${t.comment};` +
+          `--t-kw:${t.kw};--t-fn:${t.fn};--t-type:${t.type};--t-str:${t.str};--t-num:${t.num};` +
+          `--t-op:${t.op};--t-punc:${t.punc};--t-deco:${t.deco};--t-esc:${t.esc};--t-self:${t.self};` +
+          `--t-error:${t.error};--t-warning:${t.warning};--t-added:${t.added};--t-removed:${t.removed};--t-changed:${t.changed};` +
+          `--t-lno:${t.lno};--t-lna:${t.lna};` +
+          t.ansi.map((c, i) => `--a${i}:${c}`).join(';');
+        return s;
+      }
+      const st = document.createElement('style');
+      st.textContent =
+        `html[data-mode="dark"],.pm-dark{${vars(TOKENS.dark)}}` +
+        `html[data-mode="light"],.pm-light{${vars(TOKENS.light)}}`;
+      document.head.appendChild(st);
+      /* mode before paint — no flash */
+      let m = 'dark';
+      try { m = localStorage.getItem('orchids-mode') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); } catch (e) { }
+      document.documentElement.dataset.mode = m;
+    })();
+  </script>
+  <style>
+    /* ============================== base ============================== */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-/* ============================== header ============================== */
-header.top {
-  position: sticky; top: 0; z-index: 60;
-  background: var(--t-bg);
-  background: color-mix(in srgb, var(--t-bg) 84%, transparent);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--t-line);
-}
-.top-in { display: flex; align-items: center; gap: 28px; height: 62px; }
-.wordmark { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.wordmark svg { width: 19px; height: 19px; }
-.wordmark b { font: italic 560 19px/1 var(--serif); letter-spacing: .01em; }
-nav.nav { display: flex; gap: 4px; margin-left: auto; }
-nav.nav a {
-  font: 500 11.5px/1 var(--mono); text-transform: uppercase; letter-spacing: .14em;
-  text-decoration: none; color: var(--t-comment); padding: 10px 12px; border-radius: 6px;
-  transition: color .2s;
-}
-nav.nav a:hover { color: var(--t-fg); }
-nav.nav a.on { color: var(--t-fn); }
-#modeBtn {
-  width: 36px; height: 36px; display: grid; place-items: center;
-  border: 1px solid var(--t-line-strong); border-radius: 50%;
-  transition: background .2s, color .2s, transform .2s;
-}
-#modeBtn:hover { background: var(--t-fg); color: var(--t-bg); transform: rotate(14deg); }
-#modeBtn svg { width: 15px; height: 15px; }
-#modeBtn .moon { display: none; }
-html[data-mode="light"] #modeBtn .moon { display: block; }
-html[data-mode="light"] #modeBtn .sun { display: none; }
+    html {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
 
-/* ============================== hero ============================== */
-.hero { padding: clamp(56px, 8vw, 104px) 0 40px; }
-.hero-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
-.kicker { font: 500 11.5px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--t-comment); }
-.kicker i { font-style: normal; color: var(--t-fn); }
-h1.title {
-  font: 560 clamp(68px, 10.5vw, 148px)/0.94 var(--serif);
-  font-optical-sizing: auto; letter-spacing: -0.025em; margin: 18px 0 6px;
-}
-h1.title .dot { color: var(--t-fn); }
-.species-line { font: italic 400 clamp(15px, 1.6vw, 18px)/1.5 var(--serif); color: var(--t-comment); margin: 0 0 22px; }
-.species-line b { font-weight: 400; }
-.species-line .s1{color:#FA8FC5}.species-line .s2{color:#927FE8}.species-line .s3{color:#C86FD4}.species-line .s4{color:#6E8C33}.species-line .s5{color:#D19134}
-.dekk { font-size: clamp(16px, 1.7vw, 18.5px); color: var(--t-fg-soft); max-width: 52ch; margin: 0 0 8px; }
-.self-note { font: 500 12px/1.6 var(--mono); color: var(--t-comment); margin: 0 0 26px; }
-.self-note b { color: var(--t-fg-soft); font-weight: 500; }
-.meta-row { font: 500 11.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--t-comment); margin: 0 0 30px; }
-.meta-row span { color: var(--t-line-strong); padding: 0 10px; }
-.cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
-.btn-solid, .btn-ghost {
-  display: inline-flex; align-items: center; gap: 9px;
-  font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
-  padding: 15px 22px; border-radius: 999px; text-decoration: none;
-  transition: background .2s, color .2s, border-color .2s, transform .2s;
-}
-.btn-solid { background: var(--t-fg); color: var(--t-bg); border: 1px solid var(--t-fg); }
-.btn-solid:hover { background: var(--t-fn); border-color: var(--t-fn); color: #1A1322; transform: translateY(-2px); }
-.btn-ghost { border: 1px solid var(--t-line-strong); color: var(--t-fg-soft); }
-.btn-ghost:hover { border-color: var(--t-fg); color: var(--t-fg); transform: translateY(-2px); }
-.btn-solid svg, .btn-ghost svg { width: 14px; height: 14px; }
-.hero-fig { position: relative; }
-.hero-art { width: min(100%, 440px); display: block; margin: 0 auto; }
-.hero-art .pt { opacity: 0; transform: translateY(12px) scale(.96); transform-box: fill-box; transform-origin: 50% 90%; animation: rise .9s cubic-bezier(.2,.7,.2,1) forwards; }
-.hero-art .stem { stroke-dasharray: 420; stroke-dashoffset: 420; animation: draw 1.5s .1s ease forwards; }
-.hero-art .stem2 { stroke-dasharray: 160; stroke-dashoffset: 160; animation: draw 1s .5s ease forwards; }
-@keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes rise { to { opacity: 1; transform: none; } }
-.hero-cap { text-align: center; margin-top: 14px; }
-.hero-cap em { font: italic 400 15px/1 var(--serif); color: var(--t-fg-soft); }
-.hero-cap span { display: block; font: 500 10.5px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--t-comment); margin-top: 7px; }
+    :root {
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Instrument Sans', 'Helvetica Neue', sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
 
-/* ============================== marquee ============================== */
-.marquee { overflow: hidden; border-block: 1px solid var(--t-line); padding: 13px 0; margin-top: 30px; }
-.mq-track { display: flex; width: max-content; animation: mq 46s linear infinite; }
-.mq-half { display: flex; gap: 42px; padding-right: 42px; }
-.mq { display: flex; align-items: center; gap: 9px; font: 500 12px/1 var(--mono); color: var(--t-comment); letter-spacing: .05em; white-space: nowrap; }
-.mq i { width: 9px; height: 9px; border-radius: 2.5px; }
-@keyframes mq { to { transform: translateX(-50%); } }
+    body {
+      margin: 0;
+      background: var(--t-bg);
+      color: var(--t-fg);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      transition: background .35s ease, color .35s ease;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
 
-/* ============================== sections ============================== */
-section.sec { padding: clamp(64px, 8vw, 104px) 0; border-top: 1px solid var(--t-line); position: relative; scroll-margin-top: 76px; }
-.wm {
-  position: absolute; top: -6px; right: 0; z-index: 0; pointer-events: none; user-select: none;
-  font: 300 clamp(120px, 18vw, 230px)/1 var(--serif); font-style: italic;
-  color: var(--t-fg); opacity: .05;
-}
-.sec-in { position: relative; z-index: 1; }
-.sec-kicker { font: 500 11.5px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--t-comment); }
-.sec-kicker b { font-weight: 500; color: var(--t-fn); }
-h2.sec-title { font: 560 clamp(32px, 4.4vw, 52px)/1.08 var(--serif); letter-spacing: -0.015em; margin: 14px 0 18px; }
-.lede { color: var(--t-fg-soft); max-width: 62ch; margin: 0; font-size: 16.5px; }
+    ::selection {
+      background: var(--t-sel);
+    }
 
-/* ============================== species viewer ============================== */
-.viewer { display: grid; grid-template-columns: 300px 1fr; gap: clamp(28px, 4vw, 56px); margin-top: 44px; align-items: start; }
-.sp-index { border-top: 1px solid var(--t-line); }
-.sp-item {
-  display: flex; align-items: baseline; gap: 16px; width: 100%; text-align: left;
-  padding: 17px 10px; border-bottom: 1px solid var(--t-line); border-radius: 0;
-  transition: background .2s;
-}
-.sp-item:hover { background: var(--t-panel); }
-.sp-item .n { font: 500 11px/1 var(--mono); color: var(--t-comment); letter-spacing: .1em; width: 24px; flex: none; }
-.sp-item .nm { font: 500 25px/1.1 var(--serif); color: var(--t-comment); transition: color .25s, transform .25s; }
-.sp-item:hover .nm { color: var(--t-fg-soft); }
-.sp-item.on .nm { color: var(--sp); font-style: italic; transform: translateX(6px); }
-.sp-hint { font: 500 11px/1.7 var(--mono); color: var(--t-comment); margin-top: 16px; }
-.sp-hint kbd { border: 1px solid var(--t-line-strong); border-radius: 4px; padding: 1px 6px; font: inherit; }
-.plate { border: 1px solid var(--t-line); background: var(--t-panel); border-radius: 14px; padding: clamp(18px, 2.6vw, 30px); }
-.plate-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-.plate-tab { font: 500 10.5px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--t-comment); }
-.plate-arrows { display: flex; gap: 8px; }
-.plate-arrows button { width: 38px; height: 38px; border: 1px solid var(--t-line-strong); border-radius: 50%; display: grid; place-items: center; transition: background .2s, color .2s; }
-.plate-arrows button:hover { background: var(--t-fg); color: var(--t-bg); }
-.plate-arrows svg { width: 14px; height: 14px; }
-.plate-inner { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: clamp(20px, 3vw, 40px); align-items: center; }
-.plate-inner.swap { animation: plateIn .5s cubic-bezier(.2,.7,.2,1); }
-@keyframes plateIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-.plate-art svg { width: 100%; height: auto; display: block; }
-.plate-meta { display: flex; gap: 14px; font: 500 10.5px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--t-comment); margin-bottom: 10px; }
-.plate-name { font: 560 clamp(26px, 2.8vw, 34px)/1.15 var(--serif); margin: 0 0 12px; }
-.plate-name em { font: italic 400 16px/1 var(--serif); color: var(--t-comment); }
-.plate-blurb { color: var(--t-fg-soft); font-size: 15.5px; line-height: 1.68; margin: 0 0 22px; }
-.ramp { display: flex; height: 54px; border-radius: 9px; overflow: hidden; border: 1px solid var(--t-line); }
-.rsw { flex: 1; background: var(--c); transition: flex .28s cubic-bezier(.2,.7,.2,1); min-width: 0; }
-.rsw:hover { flex: 1.9; }
-.ramp-hex { display: flex; margin-top: 8px; }
-.rhex { flex: 1; font: 500 10.5px/1 var(--mono); color: var(--t-comment); padding: 4px 0; min-width: 0; overflow: hidden; white-space: nowrap; transition: flex .28s cubic-bezier(.2,.7,.2,1), color .2s; }
-.rhex:hover { color: var(--t-fg); }
-.rhex:hover { flex: 1.9; }
-.roles { font: 500 12px/1.8 var(--mono); color: var(--t-fg-soft); margin-top: 16px; }
-.roles .rl { color: var(--t-comment); text-transform: uppercase; letter-spacing: .14em; font-size: 10.5px; margin-right: 10px; }
-.roles i { font-style: normal; color: var(--rc); }
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
 
-/* ============================== preview ============================== */
-.pv-controls { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin: 40px 0 18px; }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--t-line); }
-.tab { font: 500 12.5px/1 var(--mono); color: var(--t-comment); padding: 11px 16px 13px; position: relative; transition: color .2s; }
-.tab:hover { color: var(--t-fg-soft); }
-.tab.on { color: var(--t-fg); }
-.tab.on::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; background: var(--t-fn); }
-.seg { display: flex; border: 1px solid var(--t-line-strong); border-radius: 999px; overflow: hidden; }
-.seg button { display: flex; align-items: center; gap: 7px; font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--t-comment); padding: 9px 15px; transition: background .2s, color .2s; }
-.seg button.on { background: var(--t-fg); color: var(--t-bg); }
-.seg svg { width: 12px; height: 12px; }
-.preview-stack { display: grid; gap: 26px; }
-.win { border: 1px solid var(--t-line-strong); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 70px -38px color-mix(in srgb, var(--t-fg) 30%, transparent); }
-.win-bar { display: flex; align-items: center; gap: 10px; background: var(--t-panel); padding: 11px 16px; border-bottom: 1px solid var(--t-line); }
-.win-dots { display: flex; gap: 7px; }
-.win-dots i { width: 11px; height: 11px; border-radius: 50%; }
-.win-dots i:nth-child(1) { background: var(--t-fn); }
-.win-dots i:nth-child(2) { background: var(--t-num); }
-.win-dots i:nth-child(3) { background: var(--t-str); }
-.win-name { font: 500 12px/1 var(--mono); color: var(--t-comment); margin: 0 auto; }
-.win-badge { font: 500 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--t-fn); }
-.code-area { background: var(--t-bg); padding: 16px 0 18px; overflow-x: auto; }
-.cl { display: flex; padding: 0 22px 0 0; line-height: 1.75; }
-.cl:hover { background: var(--t-linehl); }
-.cn { width: 52px; flex: none; text-align: right; padding-right: 20px; font: 400 13.5px/1.75 var(--mono); color: var(--t-lno); user-select: none; }
-.cc { white-space: pre; font: 400 13.5px/1.75 var(--mono); color: var(--t-fg); }
-.tk-c { color: var(--t-comment); font-style: italic; }
-.tk-k { color: var(--t-kw); }
-.tk-f { color: var(--t-fn); }
-.tk-t { color: var(--t-type); }
-.tk-s { color: var(--t-str); }
-.tk-n { color: var(--t-num); }
-.tk-o { color: var(--t-op); }
-.tk-p { color: var(--t-punc); }
-.tk-d { color: var(--t-deco); font-style: italic; }
-.tk-e { color: var(--t-esc); }
-.tk-x { color: var(--t-self); font-style: italic; }
-.tk-v { color: var(--t-fg); }
-.tk-i { color: var(--t-fg); }
-.status { display: flex; justify-content: space-between; gap: 16px; background: var(--t-panel); border-top: 1px solid var(--t-line); padding: 8px 16px; font: 400 11px/1.4 var(--mono); color: var(--t-comment); }
-.status .vb { color: var(--t-fn); }
-.term-body { background: var(--t-bg); padding: 20px 24px; overflow-x: auto; }
-.term-body pre { margin: 0; font: 400 13px/1.95 var(--mono); color: var(--t-fg); }
-.t-p { color: var(--a5); font-weight: 600; }
-.t-d { color: var(--t-comment); }
-.t-f { color: var(--a3); }
-.t-ok { color: var(--a2); font-weight: 600; }
-.t-h { font-weight: 600; }
-.c0{color:var(--a0)}.c1{color:var(--a1)}.c2{color:var(--a2)}.c3{color:var(--a3)}.c4{color:var(--a4)}.c5{color:var(--a5)}.c6{color:var(--a6)}.c7{color:var(--a7)}
-.c8{color:var(--a8)}.c9{color:var(--a9)}.c10{color:var(--a10)}.c11{color:var(--a11)}.c12{color:var(--a12)}.c13{color:var(--a13)}.c14{color:var(--a14)}.c15{color:var(--a15)}
+    ::-webkit-scrollbar-thumb {
+      background: var(--t-line-strong);
+      border-radius: 6px;
+    }
 
-/* ============================== system tables ============================== */
-.sys-grid { display: grid; grid-template-columns: 1fr 380px; gap: clamp(28px, 4vw, 56px); margin-top: 44px; align-items: start; }
-table.ref { width: 100%; border-collapse: collapse; }
-table.ref th { font: 500 10.5px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--t-comment); text-align: left; padding: 0 10px 12px; }
-table.ref td { border-top: 1px solid var(--t-line); padding: 8.5px 10px; }
-table.ref tr:hover td { background: var(--t-panel); }
-td.tok { font: 500 12.5px/1.4 var(--mono); color: var(--t-fg-soft); }
-.hexcell { display: inline-flex; align-items: center; gap: 9px; font: 500 12px/1 var(--mono); color: var(--t-comment); transition: color .2s; padding: 3px 0; }
-.hexcell:hover { color: var(--t-fg); }
-.hexcell i { width: 15px; height: 15px; border-radius: 4.5px; background: var(--c); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--t-fg) 18%, transparent); }
-.sys-side h3 { font: italic 500 19px/1.3 var(--serif); margin: 0 0 6px; }
-.sys-side p { color: var(--t-comment); font-size: 13.5px; margin: 0 0 20px; }
-.ansi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.ansi-cell { border: 1px solid var(--t-line); border-radius: 9px; padding: 9px; }
-.ansi-cell .blk { height: 34px; border-radius: 6px; background: var(--c); margin-bottom: 8px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--t-fg) 14%, transparent); }
-.ansi-cell button { display: block; width: 100%; text-align: left; font: 500 10px/1.6 var(--mono); color: var(--t-comment); overflow: hidden; }
-.ansi-cell button:hover { color: var(--t-fg); }
-.copy-css { margin-top: 26px; }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-/* ============================== downloads ============================== */
-.dl-row { display: grid; grid-template-columns: 210px 1fr auto; gap: 20px; align-items: center; border-top: 1px solid var(--t-line); padding: 20px 4px; }
-.dl-list { border-bottom: 1px solid var(--t-line); margin-top: 44px; }
-.dl-name { font: 560 21px/1.2 var(--serif); }
-.dl-hint { font: 400 12.5px/1.7 var(--mono); color: var(--t-comment); }
-.dl-hint code { color: var(--t-fn); font-family: var(--mono); }
-.dl-btns { display: flex; gap: 9px; }
-.chip { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; border: 1px solid var(--t-line-strong); border-radius: 999px; padding: 9px 16px; color: var(--t-fg-soft); transition: background .2s, color .2s, border-color .2s; }
-.chip:hover { background: var(--t-fg); color: var(--t-bg); border-color: var(--t-fg); }
-.dl-note { font: italic 400 15px/1.7 var(--serif); color: var(--t-comment); margin-top: 26px; }
+    a {
+      color: inherit;
+    }
 
-/* ============================== footer / toast ============================== */
-footer { border-top: 1px solid var(--t-line); padding: 52px 0 84px; }
-.foot-mark { font: italic 560 26px/1 var(--serif); margin-bottom: 14px; }
-footer p { font: 400 12.5px/1.9 var(--mono); color: var(--t-comment); margin: 0; max-width: 70ch; }
-footer p b { color: var(--t-fg-soft); font-weight: 500; }
-.toast {
-  position: fixed; left: 50%; bottom: 30px; transform: translate(-50%, 16px);
-  background: var(--t-fg); color: var(--t-bg); font: 500 12.5px/1 var(--mono);
-  padding: 12px 18px; border-radius: 9px; opacity: 0; pointer-events: none;
-  transition: opacity .25s, transform .25s; z-index: 100; white-space: nowrap;
-}
-.toast.on { opacity: 1; transform: translate(-50%, 0); }
+    button {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
 
-/* ============================== responsive ============================== */
-@media (max-width: 980px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero-fig { order: -1; }
-  .hero-art { width: min(72%, 360px); }
-  .viewer { grid-template-columns: 1fr; }
-  .sp-index { display: flex; overflow-x: auto; border-top: 0; gap: 4px; padding-bottom: 6px; }
-  .sp-item { width: auto; border: 1px solid var(--t-line); border-radius: 999px; padding: 9px 16px; flex: none; }
-  .sp-item .n { display: none; }
-  .sp-item .nm { font-size: 17px; }
-  .sp-item.on .nm { transform: none; }
-  .plate-inner { grid-template-columns: 1fr; }
-  .plate-art { max-width: 300px; margin: 0 auto; }
-  .sys-grid { grid-template-columns: 1fr; }
-  .dl-row { grid-template-columns: 1fr; gap: 10px; }
-  .dl-btns { flex-wrap: wrap; }
-}
-@media (max-width: 620px) {
-  nav.nav a { padding: 10px 7px; letter-spacing: .08em; }
-  .meta-row span { padding: 0 6px; }
-  .tabs { width: 100%; overflow-x: auto; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  html { scroll-behavior: auto; }
-}
-</style>
+    :focus-visible {
+      outline: 2px solid var(--t-fn);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 clamp(20px, 4vw, 48px);
+    }
+
+    .mono {
+      font-family: var(--mono);
+    }
+
+    /* ============================== header ============================== */
+    header.top {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: var(--t-bg);
+      background: color-mix(in srgb, var(--t-bg) 84%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--t-line);
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    .top-in {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      height: 62px;
+    }
+
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .wordmark svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .wordmark b {
+      font: italic 560 19px/1 var(--serif);
+      letter-spacing: .01em;
+    }
+
+    nav.nav {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    nav.nav a {
+      font: 500 11.5px/1 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      text-decoration: none;
+      color: var(--t-comment);
+      padding: 10px 12px;
+      border-radius: 6px;
+      transition: color .2s;
+    }
+
+    nav.nav a:hover {
+      color: var(--t-fg);
+    }
+
+    nav.nav a.on {
+      color: var(--t-fn);
+    }
+
+    #modeBtn {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--t-line-strong);
+      border-radius: 50%;
+      transition: background .2s, color .2s, transform .2s;
+    }
+
+    #modeBtn:hover {
+      background: var(--t-fg);
+      color: var(--t-bg);
+      transform: rotate(14deg);
+    }
+
+    #modeBtn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    #modeBtn .moon {
+      display: none;
+    }
+
+    html[data-mode="light"] #modeBtn .moon {
+      display: block;
+    }
+
+    html[data-mode="light"] #modeBtn .sun {
+      display: none;
+    }
+
+    /* ============================== hero ============================== */
+    .hero {
+      padding: clamp(56px, 8vw, 104px) 0 40px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: clamp(28px, 5vw, 64px);
+      align-items: center;
+    }
+
+    .kicker {
+      font: 500 11.5px/1 var(--mono);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+    }
+
+    .kicker i {
+      font-style: normal;
+      color: var(--t-fn);
+    }
+
+    h1.title {
+      font: 560 clamp(68px, 10.5vw, 148px)/0.94 var(--serif);
+      font-optical-sizing: auto;
+      letter-spacing: -0.025em;
+      margin: 18px 0 6px;
+    }
+
+    h1.title .dot {
+      color: var(--t-fn);
+    }
+
+    .species-line {
+      font: italic 400 clamp(15px, 1.6vw, 18px)/1.5 var(--serif);
+      color: var(--t-comment);
+      margin: 0 0 22px;
+    }
+
+    .species-line b {
+      font-weight: 400;
+    }
+
+    .species-line .s1 {
+      color: #FA8FC5
+    }
+
+    .species-line .s2 {
+      color: #927FE8
+    }
+
+    .species-line .s3 {
+      color: #C86FD4
+    }
+
+    .species-line .s4 {
+      color: #6E8C33
+    }
+
+    .species-line .s5 {
+      color: #D19134
+    }
+
+    .dekk {
+      font-size: clamp(16px, 1.7vw, 18.5px);
+      color: var(--t-fg-soft);
+      max-width: 52ch;
+      margin: 0 0 8px;
+    }
+
+    .self-note {
+      font: 500 12px/1.6 var(--mono);
+      color: var(--t-comment);
+      margin: 0 0 26px;
+    }
+
+    .self-note b {
+      color: var(--t-fg-soft);
+      font-weight: 500;
+    }
+
+    .meta-row {
+      font: 500 11.5px/1 var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+      margin: 0 0 30px;
+    }
+
+    .meta-row span {
+      color: var(--t-line-strong);
+      padding: 0 10px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-solid,
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font: 500 12px/1 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 15px 22px;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: background .2s, color .2s, border-color .2s, transform .2s;
+    }
+
+    .btn-solid {
+      background: var(--t-fg);
+      color: var(--t-bg);
+      border: 1px solid var(--t-fg);
+    }
+
+    .btn-solid:hover {
+      background: var(--t-fn);
+      border-color: var(--t-fn);
+      color: #1A1322;
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      border: 1px solid var(--t-line-strong);
+      color: var(--t-fg-soft);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--t-fg);
+      color: var(--t-fg);
+      transform: translateY(-2px);
+    }
+
+    .btn-solid svg,
+    .btn-ghost svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .hero-fig {
+      position: relative;
+    }
+
+    .hero-art {
+      width: min(100%, 440px);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .hero-art .pt {
+      opacity: 0;
+      transform: translateY(12px) scale(.96);
+      transform-box: fill-box;
+      transform-origin: 50% 90%;
+      animation: rise .9s cubic-bezier(.2, .7, .2, 1) forwards;
+    }
+
+    .hero-art .stem {
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+      animation: draw 1.5s .1s ease forwards;
+    }
+
+    .hero-art .stem2 {
+      stroke-dasharray: 160;
+      stroke-dashoffset: 160;
+      animation: draw 1s .5s ease forwards;
+    }
+
+    @keyframes draw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes rise {
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .hero-cap {
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    .hero-cap em {
+      font: italic 400 15px/1 var(--serif);
+      color: var(--t-fg-soft);
+    }
+
+    .hero-cap span {
+      display: block;
+      font: 500 10.5px/1 var(--mono);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+      margin-top: 7px;
+    }
+
+    /* ============================== marquee ============================== */
+    .marquee {
+      overflow: hidden;
+      border-block: 1px solid var(--t-line);
+      padding: 13px 0;
+      margin-top: 30px;
+    }
+
+    .mq-track {
+      display: flex;
+      width: max-content;
+      animation: mq 46s linear infinite;
+    }
+
+    .mq-half {
+      display: flex;
+      gap: 42px;
+      padding-right: 42px;
+    }
+
+    .mq {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font: 500 12px/1 var(--mono);
+      color: var(--t-comment);
+      letter-spacing: .05em;
+      white-space: nowrap;
+    }
+
+    .mq i {
+      width: 9px;
+      height: 9px;
+      border-radius: 2.5px;
+    }
+
+    @keyframes mq {
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* ============================== sections ============================== */
+    section.sec {
+      padding: clamp(64px, 8vw, 104px) 0;
+      border-top: 1px solid var(--t-line);
+      position: relative;
+      scroll-margin-top: 76px;
+    }
+
+    .wm {
+      position: absolute;
+      top: -6px;
+      right: 0;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      font: 300 clamp(120px, 18vw, 230px)/1 var(--serif);
+      font-style: italic;
+      color: var(--t-fg);
+      opacity: .05;
+    }
+
+    .sec-in {
+      position: relative;
+      z-index: 1;
+    }
+
+    .sec-kicker {
+      font: 500 11.5px/1 var(--mono);
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+    }
+
+    .sec-kicker b {
+      font-weight: 500;
+      color: var(--t-fn);
+    }
+
+    h2.sec-title {
+      font: 560 clamp(32px, 4.4vw, 52px)/1.08 var(--serif);
+      letter-spacing: -0.015em;
+      margin: 14px 0 18px;
+    }
+
+    .lede {
+      color: var(--t-fg-soft);
+      max-width: 62ch;
+      margin: 0;
+      font-size: 16.5px;
+    }
+
+    /* ============================== species viewer ============================== */
+    .viewer {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: clamp(28px, 4vw, 56px);
+      margin-top: 44px;
+      align-items: start;
+    }
+
+    .sp-index {
+      border-top: 1px solid var(--t-line);
+    }
+
+    .sp-item {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      width: 100%;
+      text-align: left;
+      padding: 17px 10px;
+      border-bottom: 1px solid var(--t-line);
+      border-radius: 0;
+      transition: background .2s;
+    }
+
+    .sp-item:hover {
+      background: var(--t-panel);
+    }
+
+    .sp-item .n {
+      font: 500 11px/1 var(--mono);
+      color: var(--t-comment);
+      letter-spacing: .1em;
+      width: 24px;
+      flex: none;
+    }
+
+    .sp-item .nm {
+      font: 500 25px/1.1 var(--serif);
+      color: var(--t-comment);
+      transition: color .25s, transform .25s;
+    }
+
+    .sp-item:hover .nm {
+      color: var(--t-fg-soft);
+    }
+
+    .sp-item.on .nm {
+      color: var(--sp);
+      font-style: italic;
+      transform: translateX(6px);
+    }
+
+    .sp-hint {
+      font: 500 11px/1.7 var(--mono);
+      color: var(--t-comment);
+      margin-top: 16px;
+    }
+
+    .sp-hint kbd {
+      border: 1px solid var(--t-line-strong);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font: inherit;
+    }
+
+    .plate {
+      border: 1px solid var(--t-line);
+      background: var(--t-panel);
+      border-radius: 14px;
+      padding: clamp(18px, 2.6vw, 30px);
+    }
+
+    .plate-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .plate-tab {
+      font: 500 10.5px/1 var(--mono);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+    }
+
+    .plate-arrows {
+      display: flex;
+      gap: 8px;
+    }
+
+    .plate-arrows button {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--t-line-strong);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      transition: background .2s, color .2s;
+    }
+
+    .plate-arrows button:hover {
+      background: var(--t-fg);
+      color: var(--t-bg);
+    }
+
+    .plate-arrows svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .plate-inner {
+      display: grid;
+      grid-template-columns: minmax(220px, 300px) 1fr;
+      gap: clamp(20px, 3vw, 40px);
+      align-items: center;
+    }
+
+    .plate-inner.swap {
+      animation: plateIn .5s cubic-bezier(.2, .7, .2, 1);
+    }
+
+    @keyframes plateIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .plate-art svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .plate-meta {
+      display: flex;
+      gap: 14px;
+      font: 500 10.5px/1 var(--mono);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+      margin-bottom: 10px;
+    }
+
+    .plate-name {
+      font: 560 clamp(26px, 2.8vw, 34px)/1.15 var(--serif);
+      margin: 0 0 12px;
+    }
+
+    .plate-name em {
+      font: italic 400 16px/1 var(--serif);
+      color: var(--t-comment);
+    }
+
+    .plate-blurb {
+      color: var(--t-fg-soft);
+      font-size: 15.5px;
+      line-height: 1.68;
+      margin: 0 0 22px;
+    }
+
+    .ramp {
+      display: flex;
+      height: 54px;
+      border-radius: 9px;
+      overflow: hidden;
+      border: 1px solid var(--t-line);
+    }
+
+    .rsw {
+      flex: 1;
+      background: var(--c);
+      transition: flex .28s cubic-bezier(.2, .7, .2, 1);
+      min-width: 0;
+    }
+
+    .rsw:hover {
+      flex: 1.9;
+    }
+
+    .ramp-hex {
+      display: flex;
+      margin-top: 8px;
+    }
+
+    .rhex {
+      flex: 1;
+      font: 500 10.5px/1 var(--mono);
+      color: var(--t-comment);
+      padding: 4px 0;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: flex .28s cubic-bezier(.2, .7, .2, 1), color .2s;
+    }
+
+    .rhex:hover {
+      color: var(--t-fg);
+    }
+
+    .rhex:hover {
+      flex: 1.9;
+    }
+
+    .roles {
+      font: 500 12px/1.8 var(--mono);
+      color: var(--t-fg-soft);
+      margin-top: 16px;
+    }
+
+    .roles .rl {
+      color: var(--t-comment);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: 10.5px;
+      margin-right: 10px;
+    }
+
+    .roles i {
+      font-style: normal;
+      color: var(--rc);
+    }
+
+    /* ============================== preview ============================== */
+    .pv-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 40px 0 18px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--t-line);
+    }
+
+    .tab {
+      font: 500 12.5px/1 var(--mono);
+      color: var(--t-comment);
+      padding: 11px 16px 13px;
+      position: relative;
+      transition: color .2s;
+    }
+
+    .tab:hover {
+      color: var(--t-fg-soft);
+    }
+
+    .tab.on {
+      color: var(--t-fg);
+    }
+
+    .tab.on::after {
+      content: '';
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: -1px;
+      height: 2px;
+      background: var(--t-fn);
+    }
+
+    .seg {
+      display: flex;
+      border: 1px solid var(--t-line-strong);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .seg button {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font: 500 11px/1 var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+      padding: 9px 15px;
+      transition: background .2s, color .2s;
+    }
+
+    .seg button.on {
+      background: var(--t-fg);
+      color: var(--t-bg);
+    }
+
+    .seg svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .preview-stack {
+      display: grid;
+      gap: 26px;
+    }
+
+    .win {
+      border: 1px solid var(--t-line-strong);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px -38px color-mix(in srgb, var(--t-fg) 30%, transparent);
+    }
+
+    .win-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--t-panel);
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--t-line);
+    }
+
+    .win-dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .win-dots i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .win-dots i:nth-child(1) {
+      background: var(--t-fn);
+    }
+
+    .win-dots i:nth-child(2) {
+      background: var(--t-num);
+    }
+
+    .win-dots i:nth-child(3) {
+      background: var(--t-str);
+    }
+
+    .win-name {
+      font: 500 12px/1 var(--mono);
+      color: var(--t-comment);
+      margin: 0 auto;
+    }
+
+    .win-badge {
+      font: 500 10.5px/1 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--t-fn);
+    }
+
+    .code-area {
+      background: var(--t-bg);
+      padding: 16px 0 18px;
+      overflow-x: auto;
+    }
+
+    .cl {
+      display: flex;
+      padding: 0 22px 0 0;
+      line-height: 1.75;
+    }
+
+    .cl:hover {
+      background: var(--t-linehl);
+    }
+
+    .cn {
+      width: 52px;
+      flex: none;
+      text-align: right;
+      padding-right: 20px;
+      font: 400 13.5px/1.75 var(--mono);
+      color: var(--t-lno);
+      user-select: none;
+    }
+
+    .cc {
+      white-space: pre;
+      font: 400 13.5px/1.75 var(--mono);
+      color: var(--t-fg);
+    }
+
+    .tk-c {
+      color: var(--t-comment);
+      font-style: italic;
+    }
+
+    .tk-k {
+      color: var(--t-kw);
+    }
+
+    .tk-f {
+      color: var(--t-fn);
+    }
+
+    .tk-t {
+      color: var(--t-type);
+    }
+
+    .tk-s {
+      color: var(--t-str);
+    }
+
+    .tk-n {
+      color: var(--t-num);
+    }
+
+    .tk-o {
+      color: var(--t-op);
+    }
+
+    .tk-p {
+      color: var(--t-punc);
+    }
+
+    .tk-d {
+      color: var(--t-deco);
+      font-style: italic;
+    }
+
+    .tk-e {
+      color: var(--t-esc);
+    }
+
+    .tk-x {
+      color: var(--t-self);
+      font-style: italic;
+    }
+
+    .tk-v {
+      color: var(--t-fg);
+    }
+
+    .tk-i {
+      color: var(--t-fg);
+    }
+
+    .status {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      background: var(--t-panel);
+      border-top: 1px solid var(--t-line);
+      padding: 8px 16px;
+      font: 400 11px/1.4 var(--mono);
+      color: var(--t-comment);
+    }
+
+    .status .vb {
+      color: var(--t-fn);
+    }
+
+    .term-body {
+      background: var(--t-bg);
+      padding: 20px 24px;
+      overflow-x: auto;
+    }
+
+    .term-body pre {
+      margin: 0;
+      font: 400 13px/1.95 var(--mono);
+      color: var(--t-fg);
+    }
+
+    .t-p {
+      color: var(--a5);
+      font-weight: 600;
+    }
+
+    .t-d {
+      color: var(--t-comment);
+    }
+
+    .t-f {
+      color: var(--a3);
+    }
+
+    .t-ok {
+      color: var(--a2);
+      font-weight: 600;
+    }
+
+    .t-h {
+      font-weight: 600;
+    }
+
+    .c0 {
+      color: var(--a0)
+    }
+
+    .c1 {
+      color: var(--a1)
+    }
+
+    .c2 {
+      color: var(--a2)
+    }
+
+    .c3 {
+      color: var(--a3)
+    }
+
+    .c4 {
+      color: var(--a4)
+    }
+
+    .c5 {
+      color: var(--a5)
+    }
+
+    .c6 {
+      color: var(--a6)
+    }
+
+    .c7 {
+      color: var(--a7)
+    }
+
+    .c8 {
+      color: var(--a8)
+    }
+
+    .c9 {
+      color: var(--a9)
+    }
+
+    .c10 {
+      color: var(--a10)
+    }
+
+    .c11 {
+      color: var(--a11)
+    }
+
+    .c12 {
+      color: var(--a12)
+    }
+
+    .c13 {
+      color: var(--a13)
+    }
+
+    .c14 {
+      color: var(--a14)
+    }
+
+    .c15 {
+      color: var(--a15)
+    }
+
+    /* ============================== system tables ============================== */
+    .sys-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: clamp(28px, 4vw, 56px);
+      margin-top: 44px;
+      align-items: start;
+    }
+
+    table.ref {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table.ref th {
+      font: 500 10.5px/1 var(--mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--t-comment);
+      text-align: left;
+      padding: 0 10px 12px;
+    }
+
+    table.ref td {
+      border-top: 1px solid var(--t-line);
+      padding: 8.5px 10px;
+    }
+
+    table.ref tr:hover td {
+      background: var(--t-panel);
+    }
+
+    td.tok {
+      font: 500 12.5px/1.4 var(--mono);
+      color: var(--t-fg-soft);
+    }
+
+    .hexcell {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font: 500 12px/1 var(--mono);
+      color: var(--t-comment);
+      transition: color .2s;
+      padding: 3px 0;
+    }
+
+    .hexcell:hover {
+      color: var(--t-fg);
+    }
+
+    .hexcell i {
+      width: 15px;
+      height: 15px;
+      border-radius: 4.5px;
+      background: var(--c);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--t-fg) 18%, transparent);
+    }
+
+    .sys-side h3 {
+      font: italic 500 19px/1.3 var(--serif);
+      margin: 0 0 6px;
+    }
+
+    .sys-side p {
+      color: var(--t-comment);
+      font-size: 13.5px;
+      margin: 0 0 20px;
+    }
+
+    .ansi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .ansi-cell {
+      border: 1px solid var(--t-line);
+      border-radius: 9px;
+      padding: 9px;
+    }
+
+    .ansi-cell .blk {
+      height: 34px;
+      border-radius: 6px;
+      background: var(--c);
+      margin-bottom: 8px;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--t-fg) 14%, transparent);
+    }
+
+    .ansi-cell button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      font: 500 10px/1.6 var(--mono);
+      color: var(--t-comment);
+      overflow: hidden;
+    }
+
+    .ansi-cell button:hover {
+      color: var(--t-fg);
+    }
+
+    .copy-css {
+      margin-top: 26px;
+    }
+
+    /* ============================== downloads ============================== */
+    .dl-row {
+      display: grid;
+      grid-template-columns: 210px 1fr auto;
+      gap: 20px;
+      align-items: center;
+      border-top: 1px solid var(--t-line);
+      padding: 20px 4px;
+    }
+
+    .dl-list {
+      border-bottom: 1px solid var(--t-line);
+      margin-top: 44px;
+    }
+
+    .dl-name {
+      font: 560 21px/1.2 var(--serif);
+    }
+
+    .dl-hint {
+      font: 400 12.5px/1.7 var(--mono);
+      color: var(--t-comment);
+    }
+
+    .dl-hint code {
+      color: var(--t-fn);
+      font-family: var(--mono);
+    }
+
+    .dl-btns {
+      display: flex;
+      gap: 9px;
+    }
+
+    .chip {
+      font: 500 11px/1 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border: 1px solid var(--t-line-strong);
+      border-radius: 999px;
+      padding: 9px 16px;
+      color: var(--t-fg-soft);
+      transition: background .2s, color .2s, border-color .2s;
+    }
+
+    .chip:hover {
+      background: var(--t-fg);
+      color: var(--t-bg);
+      border-color: var(--t-fg);
+    }
+
+    .dl-note {
+      font: italic 400 15px/1.7 var(--serif);
+      color: var(--t-comment);
+      margin-top: 26px;
+    }
+
+    /* ============================== footer / toast ============================== */
+    footer {
+      border-top: 1px solid var(--t-line);
+      padding: 52px 0 84px;
+    }
+
+    .foot-mark {
+      font: italic 560 26px/1 var(--serif);
+      margin-bottom: 14px;
+    }
+
+    footer p {
+      font: 400 12.5px/1.9 var(--mono);
+      color: var(--t-comment);
+      margin: 0;
+      max-width: 70ch;
+    }
+
+    footer p b {
+      color: var(--t-fg-soft);
+      font-weight: 500;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      transform: translate(-50%, 16px);
+      background: var(--t-fg);
+      color: var(--t-bg);
+      font: 500 12.5px/1 var(--mono);
+      padding: 12px 18px;
+      border-radius: 9px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .toast.on {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* ============================== responsive ============================== */
+    @media (max-width: 980px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-fig {
+        order: -1;
+      }
+
+      .hero-art {
+        width: min(72%, 360px);
+      }
+
+      .viewer {
+        grid-template-columns: 1fr;
+      }
+
+      .sp-index {
+        display: flex;
+        overflow-x: auto;
+        border-top: 0;
+        gap: 4px;
+        padding-bottom: 6px;
+      }
+
+      .sp-item {
+        width: auto;
+        border: 1px solid var(--t-line);
+        border-radius: 999px;
+        padding: 9px 16px;
+        flex: none;
+      }
+
+      .sp-item .n {
+        display: none;
+      }
+
+      .sp-item .nm {
+        font-size: 17px;
+      }
+
+      .sp-item.on .nm {
+        transform: none;
+      }
+
+      .plate-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .plate-art {
+        max-width: 300px;
+        margin: 0 auto;
+      }
+
+      .sys-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dl-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .dl-btns {
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 620px) {
+      nav.nav a {
+        padding: 10px 7px;
+        letter-spacing: .08em;
+      }
+
+      .meta-row span {
+        padding: 0 6px;
+      }
+
+      .tabs {
+        width: 100%;
+        overflow-x: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* Chrome iOS optimizations */
+    @supports (-webkit-touch-callout: none) {
+      body {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .code-area,
+      .term-body {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      button,
+      a {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      /* Improve touch targets for iOS */
+      .btn-solid,
+      .btn-ghost,
+      .chip,
+      .tab,
+      .sp-item,
+      .plate-arrows button {
+        min-height: 44px;
+        min-width: 44px;
+      }
+
+      /* Fix position sticky on iOS */
+      header.top {
+        position: -webkit-sticky;
+        position: sticky;
+      }
+
+      /* Improve performance */
+      .hero-art,
+      .plate-art svg {
+        will-change: transform, opacity;
+      }
+
+      /* Fix Safe Area for notched devices */
+      .wrap {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+      }
+
+      /* Prevent overscroll bounce */
+      html,
+      body {
+        overscroll-behavior: none;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header class="top">
-  <div class="wrap top-in">
-    <a class="wordmark" href="#top" aria-label="Orchids — back to top">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#FA8FC5"><ellipse cx="12" cy="6.4" rx="2.7" ry="4.4"/><ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(72 12 12)"/><ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(144 12 12)"/><ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(216 12 12)"/><ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(288 12 12)"/></g><circle cx="12" cy="12" r="2.4" fill="#F2C566"/></svg>
-      <b>Orchids</b>
-    </a>
-    <nav class="nav" aria-label="Sections">
-      <a href="#species">Species</a>
-      <a href="#preview">Preview</a>
-      <a href="#system">System</a>
-      <a href="#download">Download</a>
-    </nav>
-    <button id="modeBtn" aria-label="Toggle light and dark" title="Toggle light and dark">
-      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
-      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 13.2A8.3 8.3 0 1 1 10.8 3.6a6.8 6.8 0 0 0 9.6 9.6Z"/></svg>
-    </button>
-  </div>
-</header>
-
-<main id="top">
-
-  <!-- ================= HERO ================= -->
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <p class="kicker">Orchidaceae <i>·</i> a chromatic study</p>
-        <h1 class="title">Orchids<span class="dot">.</span></h1>
-        <p class="species-line"><b class="s1">Phalaenopsis</b> · <b class="s2">Vanda</b> · <b class="s3">Cattleya</b> · <b class="s4">Paphiopedilum</b> · <b class="s5">Oncidium</b></p>
-        <p class="dekk">A light &amp; dark color theme for VS Code, Zed, IntelliJ, iTerm2, Alacritty, Ghostty, Kitty and Windows Terminal — every hue sampled from five living orchid species.</p>
-        <p class="self-note">← you are looking at Orchids right now. <b>This page renders itself in both variants.</b></p>
-        <p class="meta-row">light + dark<span>/</span>14 syntax roles<span>/</span>16 ansi<span>/</span>8 editors<span>/</span>v1.0</p>
-        <div class="cta-row">
-          <a class="btn-solid" href="#download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0 5-5m-5 5-5-5M4 20h16"/></svg>Download themes</a>
-          <a class="btn-ghost" href="#species">Browse the herbarium</a>
-        </div>
-      </div>
-      <figure class="hero-fig" style="margin:0">
-        <svg class="hero-art" viewBox="0 0 420 440" role="img" aria-label="Stylized Phalaenopsis orchid in theme colors">
-          <ellipse cx="96" cy="252" rx="72" ry="42" fill="none" stroke="#F2C566" stroke-width="2" opacity=".45" transform="rotate(-26 96 252)"/>
-          <ellipse cx="322" cy="102" rx="66" ry="38" fill="none" stroke="#6D48D6" stroke-width="2" opacity=".4" transform="rotate(20 322 102)"/>
-          <path class="stem" d="M212 432 C 198 372 192 318 204 258" stroke="#5E7C2B" stroke-width="7" fill="none" stroke-linecap="round"/>
-          <path class="stem2" d="M206 328 C 172 320 148 298 150 274" stroke="#5E7C2B" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <g class="pt" style="animation-delay:.7s">
-            <ellipse cx="150" cy="272" rx="15" ry="9" fill="#D19134" transform="rotate(32 150 272)"/>
-            <path d="M150 268 c -13 -3 -21 6 -16 14 c 4 6 12 6 16 13 c 4 -7 12 -7 16 -13 c 5 -8 -3 -17 -16 -14 z" fill="#F5C566"/>
-            <path d="M143 274 l 14 0 M144 280 l 12 0" stroke="#8A5514" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <header class="top">
+    <div class="wrap top-in">
+      <a class="wordmark" href="#top" aria-label="Orchids — back to top">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <g fill="#FA8FC5">
+            <ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" />
+            <ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(72 12 12)" />
+            <ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(144 12 12)" />
+            <ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(216 12 12)" />
+            <ellipse cx="12" cy="6.4" rx="2.7" ry="4.4" transform="rotate(288 12 12)" />
           </g>
-          <ellipse class="pt" style="animation-delay:.55s" cx="152" cy="272" rx="0" ry="0"/>
-          <path class="pt" style="animation-delay:.55s" d="M152 272 a 15 9 0 0 1 -30 0 Z" fill="none"/>
-          <g class="pt" style="animation-delay:.2s">
-            <ellipse cx="140" cy="122" rx="66" ry="46" fill="#FFC1DD" transform="rotate(-30 140 122)"/>
-            <ellipse cx="142" cy="118" rx="38" ry="24" fill="#FFD9EC" transform="rotate(-30 142 118)"/>
-          </g>
-          <g class="pt" style="animation-delay:.3s">
-            <ellipse cx="282" cy="122" rx="66" ry="46" fill="#FFC1DD" transform="rotate(30 282 122)"/>
-            <ellipse cx="280" cy="118" rx="38" ry="24" fill="#FFD9EC" transform="rotate(30 280 118)"/>
-          </g>
-          <ellipse class="pt" style="animation-delay:.12s" cx="212" cy="98" rx="23" ry="39" fill="#FA8FC5"/>
-          <g class="pt" style="animation-delay:.4s">
-            <ellipse cx="148" cy="200" rx="50" ry="27" fill="#FA8FC5" transform="rotate(26 148 200)"/>
-            <ellipse cx="276" cy="200" rx="50" ry="27" fill="#FA8FC5" transform="rotate(-26 276 200)"/>
-          </g>
-          <g class="pt" style="animation-delay:.5s">
-            <path d="M212 170 C 194 167 179 179 182 196 C 167 199 161 214 170 226 C 161 238 167 256 182 259 C 194 262 202 267 212 267 C 222 267 230 262 242 259 C 257 256 263 238 254 226 C 263 214 257 199 242 196 C 245 179 230 167 212 170 Z" fill="#B0256B"/>
-            <ellipse cx="212" cy="204" rx="20" ry="12" fill="#F2C566"/>
-            <circle cx="205" cy="204" r="3.2" fill="#8E1F55"/>
-            <circle cx="219" cy="204" r="3.2" fill="#8E1F55"/>
-            <path d="M196 228 C 186 236 178 237 170 232" fill="none" stroke="#B0256B" stroke-width="4.5" stroke-linecap="round"/>
-            <path d="M228 228 C 238 236 246 237 254 232" fill="none" stroke="#B0256B" stroke-width="4.5" stroke-linecap="round"/>
-            <path d="M206 242 C 204 249 199 254 192 257" fill="none" stroke="#B0256B" stroke-width="4.5" stroke-linecap="round"/>
-            <path d="M218 242 C 220 249 225 254 232 257" fill="none" stroke="#B0256B" stroke-width="4.5" stroke-linecap="round"/>
-          </g>
+          <circle cx="12" cy="12" r="2.4" fill="#F2C566" />
         </svg>
-        <figcaption class="hero-cap"><em>Phalaenopsis amabilis</em><span>drawn at full scale · in theme colors</span></figcaption>
-      </figure>
+        <b>Orchids</b>
+      </a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#species">Species</a>
+        <a href="#preview">Preview</a>
+        <a href="#system">System</a>
+        <a href="#download">Download</a>
+      </nav>
+      <button id="modeBtn" aria-label="Toggle light and dark" title="Toggle light and dark">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+          stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.4" />
+          <path
+            d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19" />
+        </svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.4 13.2A8.3 8.3 0 1 1 10.8 3.6a6.8 6.8 0 0 0 9.6 9.6Z" />
+        </svg>
+      </button>
     </div>
-  </section>
+  </header>
 
-  <div class="marquee" aria-hidden="true"><div class="mq-track" id="mqTrack"></div></div>
+  <main id="top">
 
-  <!-- ================= SPECIES ================= -->
-  <section class="sec" id="species">
-    <span class="wm" aria-hidden="true">01</span>
-    <div class="wrap sec-in">
-      <p class="sec-kicker"><b>01</b> · the species</p>
-      <h2 class="sec-title">Five species, five voices.</h2>
-      <p class="lede">Each plate is drawn in the colors it donates to the theme. Click any swatch to copy its hex; walk the herbarium with the arrows or your keyboard.</p>
-      <div class="viewer">
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="wrap hero-grid">
         <div>
-          <div class="sp-index" id="spIndex" role="tablist" aria-label="Orchid species"></div>
-          <p class="sp-hint"><kbd>←</kbd> <kbd>→</kbd> to browse the plates</p>
+          <p class="kicker">Orchidaceae <i>·</i> a chromatic study</p>
+          <h1 class="title">Orchids<span class="dot">.</span></h1>
+          <p class="species-line"><b class="s1">Phalaenopsis</b> · <b class="s2">Vanda</b> · <b class="s3">Cattleya</b>
+            · <b class="s4">Paphiopedilum</b> · <b class="s5">Oncidium</b></p>
+          <p class="dekk">A light &amp; dark color theme for VS Code, Zed, IntelliJ, iTerm2, Alacritty, Ghostty, Kitty
+            and Windows Terminal — every hue sampled from five living orchid species.</p>
+          <p class="self-note">← you are looking at Orchids right now. <b>This page renders itself in both variants.</b>
+          </p>
+          <p class="meta-row">light + dark<span>/</span>14 syntax roles<span>/</span>16 ansi<span>/</span>8
+            editors<span>/</span>v1.0</p>
+          <div class="cta-row">
+            <a class="btn-solid" href="#download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 4v11m0 0 5-5m-5 5-5-5M4 20h16" />
+              </svg>Download themes</a>
+            <a class="btn-ghost" href="#species">Browse the herbarium</a>
+          </div>
         </div>
-        <div class="plate" id="plate" tabindex="0" aria-label="Species plate viewer"></div>
+        <figure class="hero-fig" style="margin:0">
+          <svg class="hero-art" viewBox="0 0 420 440" role="img"
+            aria-label="Stylized Phalaenopsis orchid in theme colors">
+            <ellipse cx="96" cy="252" rx="72" ry="42" fill="none" stroke="#F2C566" stroke-width="2" opacity=".45"
+              transform="rotate(-26 96 252)" />
+            <ellipse cx="322" cy="102" rx="66" ry="38" fill="none" stroke="#6D48D6" stroke-width="2" opacity=".4"
+              transform="rotate(20 322 102)" />
+            <path class="stem" d="M212 432 C 198 372 192 318 204 258" stroke="#5E7C2B" stroke-width="7" fill="none"
+              stroke-linecap="round" />
+            <path class="stem2" d="M206 328 C 172 320 148 298 150 274" stroke="#5E7C2B" stroke-width="5" fill="none"
+              stroke-linecap="round" />
+            <g class="pt" style="animation-delay:.7s">
+              <ellipse cx="150" cy="272" rx="15" ry="9" fill="#D19134" transform="rotate(32 150 272)" />
+              <path d="M150 268 c -13 -3 -21 6 -16 14 c 4 6 12 6 16 13 c 4 -7 12 -7 16 -13 c 5 -8 -3 -17 -16 -14 z"
+                fill="#F5C566" />
+              <path d="M143 274 l 14 0 M144 280 l 12 0" stroke="#8A5514" stroke-width="2.4" fill="none"
+                stroke-linecap="round" />
+            </g>
+            <ellipse class="pt" style="animation-delay:.55s" cx="152" cy="272" rx="0" ry="0" />
+            <path class="pt" style="animation-delay:.55s" d="M152 272 a 15 9 0 0 1 -30 0 Z" fill="none" />
+            <g class="pt" style="animation-delay:.2s">
+              <ellipse cx="140" cy="122" rx="66" ry="46" fill="#FFC1DD" transform="rotate(-30 140 122)" />
+              <ellipse cx="142" cy="118" rx="38" ry="24" fill="#FFD9EC" transform="rotate(-30 142 118)" />
+            </g>
+            <g class="pt" style="animation-delay:.3s">
+              <ellipse cx="282" cy="122" rx="66" ry="46" fill="#FFC1DD" transform="rotate(30 282 122)" />
+              <ellipse cx="280" cy="118" rx="38" ry="24" fill="#FFD9EC" transform="rotate(30 280 118)" />
+            </g>
+            <ellipse class="pt" style="animation-delay:.12s" cx="212" cy="98" rx="23" ry="39" fill="#FA8FC5" />
+            <g class="pt" style="animation-delay:.4s">
+              <ellipse cx="148" cy="200" rx="50" ry="27" fill="#FA8FC5" transform="rotate(26 148 200)" />
+              <ellipse cx="276" cy="200" rx="50" ry="27" fill="#FA8FC5" transform="rotate(-26 276 200)" />
+            </g>
+            <g class="pt" style="animation-delay:.5s">
+              <path
+                d="M212 170 C 194 167 179 179 182 196 C 167 199 161 214 170 226 C 161 238 167 256 182 259 C 194 262 202 267 212 267 C 222 267 230 262 242 259 C 257 256 263 238 254 226 C 263 214 257 199 242 196 C 245 179 230 167 212 170 Z"
+                fill="#B0256B" />
+              <ellipse cx="212" cy="204" rx="20" ry="12" fill="#F2C566" />
+              <circle cx="205" cy="204" r="3.2" fill="#8E1F55" />
+              <circle cx="219" cy="204" r="3.2" fill="#8E1F55" />
+              <path d="M196 228 C 186 236 178 237 170 232" fill="none" stroke="#B0256B" stroke-width="4.5"
+                stroke-linecap="round" />
+              <path d="M228 228 C 238 236 246 237 254 232" fill="none" stroke="#B0256B" stroke-width="4.5"
+                stroke-linecap="round" />
+              <path d="M206 242 C 204 249 199 254 192 257" fill="none" stroke="#B0256B" stroke-width="4.5"
+                stroke-linecap="round" />
+              <path d="M218 242 C 220 249 225 254 232 257" fill="none" stroke="#B0256B" stroke-width="4.5"
+                stroke-linecap="round" />
+            </g>
+          </svg>
+          <figcaption class="hero-cap"><em>Phalaenopsis amabilis</em><span>drawn at full scale · in theme colors</span>
+          </figcaption>
+        </figure>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ================= PREVIEW ================= -->
-  <section class="sec" id="preview">
-    <span class="wm" aria-hidden="true">02</span>
-    <div class="wrap sec-in">
-      <p class="sec-kicker"><b>02</b> · in practice</p>
-      <h2 class="sec-title">Seen in three languages.</h2>
-      <p class="lede">TypeScript, Python and Rust, set in both variants. The preview keeps its own light/dark switch, so you can judge dark code against the pale page — exactly how a theme meets a real editor.</p>
-      <div class="pv-controls">
-        <div class="tabs" role="tablist" aria-label="Language">
-          <button class="tab on" data-lang="ts" role="tab">orchids.ts</button>
-          <button class="tab" data-lang="py" role="tab">orchids.py</button>
-          <button class="tab" data-lang="rs" role="tab">orchids.rs</button>
-        </div>
-        <div class="seg" role="group" aria-label="Preview variant">
-          <button id="pmLight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>Light</button>
-          <button id="pmDark" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 13.2A8.3 8.3 0 1 1 10.8 3.6a6.8 6.8 0 0 0 9.6 9.6Z"/></svg>Dark</button>
+    <div class="marquee" aria-hidden="true">
+      <div class="mq-track" id="mqTrack"></div>
+    </div>
+
+    <!-- ================= SPECIES ================= -->
+    <section class="sec" id="species">
+      <span class="wm" aria-hidden="true">01</span>
+      <div class="wrap sec-in">
+        <p class="sec-kicker"><b>01</b> · the species</p>
+        <h2 class="sec-title">Five species, five voices.</h2>
+        <p class="lede">Each plate is drawn in the colors it donates to the theme. Click any swatch to copy its hex;
+          walk the herbarium with the arrows or your keyboard.</p>
+        <div class="viewer">
+          <div>
+            <div class="sp-index" id="spIndex" role="tablist" aria-label="Orchid species"></div>
+            <p class="sp-hint"><kbd>←</kbd> <kbd>→</kbd> to browse the plates</p>
+          </div>
+          <div class="plate" id="plate" tabindex="0" aria-label="Species plate viewer"></div>
         </div>
       </div>
-      <div class="preview-stack" id="pvStack">
-        <div class="win">
-          <div class="win-bar">
-            <div class="win-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span class="win-name" id="fileName">orchids.ts</span>
-            <span class="win-badge" id="pmBadge">Orchids Dark</span>
+    </section>
+
+    <!-- ================= PREVIEW ================= -->
+    <section class="sec" id="preview">
+      <span class="wm" aria-hidden="true">02</span>
+      <div class="wrap sec-in">
+        <p class="sec-kicker"><b>02</b> · in practice</p>
+        <h2 class="sec-title">Seen in three languages.</h2>
+        <p class="lede">TypeScript, Python and Rust, set in both variants. The preview keeps its own light/dark switch,
+          so you can judge dark code against the pale page — exactly how a theme meets a real editor.</p>
+        <div class="pv-controls">
+          <div class="tabs" role="tablist" aria-label="Language">
+            <button class="tab on" data-lang="ts" role="tab">orchids.ts</button>
+            <button class="tab" data-lang="py" role="tab">orchids.py</button>
+            <button class="tab" data-lang="rs" role="tab">orchids.rs</button>
           </div>
-          <div class="code-area" id="codeArea"></div>
-          <div class="status">
-            <span>main · orchids</span>
-            <span>UTF-8 · LF · <span class="vb" id="pmBadge2">Orchids Dark</span> · Ln 18, Col 2</span>
+          <div class="seg" role="group" aria-label="Preview variant">
+            <button id="pmLight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <circle cx="12" cy="12" r="4.4" />
+                <path
+                  d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19" />
+              </svg>Light</button>
+            <button id="pmDark" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.4 13.2A8.3 8.3 0 1 1 10.8 3.6a6.8 6.8 0 0 0 9.6 9.6Z" />
+              </svg>Dark</button>
           </div>
         </div>
-        <div class="win">
-          <div class="win-bar">
-            <div class="win-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span class="win-name">zsh — orchids</span>
-            <span class="win-badge">ANSI 16</span>
+        <div class="preview-stack" id="pvStack">
+          <div class="win">
+            <div class="win-bar">
+              <div class="win-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+              <span class="win-name" id="fileName">orchids.ts</span>
+              <span class="win-badge" id="pmBadge">Orchids Dark</span>
+            </div>
+            <div class="code-area" id="codeArea"></div>
+            <div class="status">
+              <span>main · orchids</span>
+              <span>UTF-8 · LF · <span class="vb" id="pmBadge2">Orchids Dark</span> · Ln 18, Col 2</span>
+            </div>
           </div>
-          <div class="term-body"><pre><span class="t-p">❯</span> orchids ls --all
+          <div class="win">
+            <div class="win-bar">
+              <div class="win-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+              <span class="win-name">zsh — orchids</span>
+              <span class="win-badge">ANSI 16</span>
+            </div>
+            <div class="term-body">
+              <pre><span class="t-p">❯</span> orchids ls --all
   <span class="t-d">oncidium</span>       <span class="c3">██</span>  <span class="t-h c3">#F2C566</span>   next bloom in 10 days
   <span class="t-d">cattleya</span>       <span class="c13">██</span>  <span class="t-h c13">#FFA5D6</span>   next bloom in 14 days
   <span class="t-d">vanda</span>          <span class="c12">██</span>  <span class="t-h c12">#AEC6FF</span>   next bloom in 18 days
@@ -492,104 +1671,130 @@ footer p b { color: var(--t-fg-soft); font-weight: 500; }
 
 <span class="t-p">❯</span> orchids preview --variant dark
   <span class="t-ok">✓</span> 5 species <span class="t-d">·</span> 14 syntax roles <span class="t-d">·</span> 16 ansi
-  <span class="t-ok">✓</span> <span class="c3">orchids-dark.json</span> written to <span class="t-d">./dist</span></pre></div>
+  <span class="t-ok">✓</span> <span class="c3">orchids-dark.json</span> written to <span class="t-d">./dist</span></pre>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ================= SYSTEM ================= -->
-  <section class="sec" id="system">
-    <span class="wm" aria-hidden="true">03</span>
-    <div class="wrap sec-in">
-      <p class="sec-kicker"><b>03</b> · the system</p>
-      <h2 class="sec-title">Every color traced to a petal.</h2>
-      <p class="lede">Fourteen syntax roles and a full sixteen-color ANSI wheel, derived from the plates above — nothing arbitrary. Click any hex to copy it.</p>
-      <div class="sys-grid">
-        <div>
-          <table class="ref" id="refTable">
-            <thead><tr><th>role</th><th>Orchids Dark</th><th>Orchids Light</th></tr></thead>
-            <tbody></tbody>
-          </table>
-          <div class="copy-css"><button class="btn-ghost" id="cssVarsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy palette as CSS variables</button></div>
-        </div>
-        <div class="sys-side">
-          <h3>The ANSI wheel</h3>
-          <p>Terminals only understand sixteen slots — shown here for the variant the page is currently wearing. Toggle the page to see the other half.</p>
-          <div class="ansi-grid" id="ansiGrid"></div>
+    <!-- ================= SYSTEM ================= -->
+    <section class="sec" id="system">
+      <span class="wm" aria-hidden="true">03</span>
+      <div class="wrap sec-in">
+        <p class="sec-kicker"><b>03</b> · the system</p>
+        <h2 class="sec-title">Every color traced to a petal.</h2>
+        <p class="lede">Fourteen syntax roles and a full sixteen-color ANSI wheel, derived from the plates above —
+          nothing arbitrary. Click any hex to copy it.</p>
+        <div class="sys-grid">
+          <div>
+            <table class="ref" id="refTable">
+              <thead>
+                <tr>
+                  <th>role</th>
+                  <th>Orchids Dark</th>
+                  <th>Orchids Light</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="copy-css"><button class="btn-ghost" id="cssVarsBtn"><svg viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="11" height="11" rx="2" />
+                  <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+                </svg>Copy palette as CSS variables</button></div>
+          </div>
+          <div class="sys-side">
+            <h3>The ANSI wheel</h3>
+            <p>Terminals only understand sixteen slots — shown here for the variant the page is currently wearing.
+              Toggle the page to see the other half.</p>
+            <div class="ansi-grid" id="ansiGrid"></div>
+          </div>
         </div>
       </div>
+    </section>
+
+    <!-- ================= DOWNLOAD ================= -->
+    <section class="sec" id="download">
+      <span class="wm" aria-hidden="true">04</span>
+      <div class="wrap sec-in">
+        <p class="sec-kicker"><b>04</b> · download</p>
+        <h2 class="sec-title">Take the orchids home.</h2>
+        <p class="lede">Eight targets, sixteen files — generated right here in your browser. Nothing leaves the page,
+          nothing is fetched; what you save is exactly what this site is wearing.</p>
+        <div class="dl-list" id="dlList"></div>
+        <p class="dl-note">This page is fully static — drop it on GitHub Pages as <span class="mono">index.html</span>
+          and it will bloom anywhere.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-mark">Orchids</div>
+      <p>A chromatic study in five species — Phalaenopsis, Vanda, Cattleya, Paphiopedilum, Oncidium.<br>
+        Set in <b>Fraunces</b> &amp; <b>JetBrains Mono</b> · illustrations drawn as flat vectors in the colors they
+        describe · themes generated client-side.</p>
     </div>
-  </section>
+  </footer>
 
-  <!-- ================= DOWNLOAD ================= -->
-  <section class="sec" id="download">
-    <span class="wm" aria-hidden="true">04</span>
-    <div class="wrap sec-in">
-      <p class="sec-kicker"><b>04</b> · download</p>
-      <h2 class="sec-title">Take the orchids home.</h2>
-      <p class="lede">Eight targets, sixteen files — generated right here in your browser. Nothing leaves the page, nothing is fetched; what you save is exactly what this site is wearing.</p>
-      <div class="dl-list" id="dlList"></div>
-      <p class="dl-note">This page is fully static — drop it on GitHub Pages as <span class="mono">index.html</span> and it will bloom anywhere.</p>
-    </div>
-  </section>
-</main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<footer>
-  <div class="wrap">
-    <div class="foot-mark">Orchids</div>
-    <p>A chromatic study in five species — Phalaenopsis, Vanda, Cattleya, Paphiopedilum, Oncidium.<br>
-    Set in <b>Fraunces</b> &amp; <b>JetBrains Mono</b> · illustrations drawn as flat vectors in the colors they describe · themes generated client-side.</p>
-  </div>
-</footer>
+  <script>
+    /* ============================================================
+       Orchids — page behavior
+       ============================================================ */
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const cap = v => v === 'dark' ? 'Dark' : 'Light';
 
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
+    /* ---------------- toast + clipboard ---------------- */
+    let tt;
+    function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2200); }
+    async function copyText(s) {
+      try { await navigator.clipboard.writeText(s); }
+      catch (e) {
+        const ta = document.createElement('textarea'); ta.value = s; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (_) { } ta.remove();
+      }
+    }
 
-<script>
-/* ============================================================
-   Orchids — page behavior
-   ============================================================ */
-'use strict';
-const $ = id => document.getElementById(id);
-const cap = v => v === 'dark' ? 'Dark' : 'Light';
+    /* ---------------- species data + botanical plates ---------------- */
+    const SPECIES = [
+      {
+        id: 'phalaenopsis', num: 'I', name: 'Phalaenopsis', latin: 'Phalaenopsis amabilis',
+        blurb: 'Broad moth-wing petals floating over a saturated magenta lip — the orchid on every windowsill. Phalaenopsis lends Orchids its pinks: function calls, the caret, and every soft glow of ANSI magenta.',
+        roles: ['function calls', 'the caret', 'ansi magenta'],
+        ramp: ['#FFD9EC', '#FFC1DD', '#FA8FC5', '#D64E95', '#B0256B']
+      },
+      {
+        id: 'vanda', num: 'II', name: 'Vanda', latin: 'Vanda coerulea',
+        blurb: 'The rare orchid that is truly blue: tessellated violet checks on flat, rounded petals. Its violet anchors the theme — keywords and control flow speak in Vanda, types in its deeper blue.',
+        roles: ['keywords', 'types', 'ansi blue'],
+        ramp: ['#E4DEFF', '#BFB2FA', '#927FE8', '#6D48D6', '#432F92']
+      },
+      {
+        id: 'cattleya', num: 'III', name: 'Cattleya', latin: 'Cattleya trianae',
+        blurb: 'Ruffled lavender petals wrapped around a frilled magenta lip with a gilded throat. Cattleya becomes the quiet violet of selections, of self and this — the colors that hold, not shout.',
+        roles: ['selection', 'self · this', 'violet accents'],
+        ramp: ['#F6DCF6', '#E3A9E8', '#C86FD4', '#9C3EB5', '#5E2170']
+      },
+      {
+        id: 'paphiopedilum', num: 'IV', name: 'Paphiopedilum', latin: 'Paphiopedilum rothschildianum',
+        blurb: 'A waxy burgundy pouch beneath moss-green sepals, striped like stained glass. Its moss becomes every string literal; its burgundy, every error — with a gold rim for the rare warning.',
+        roles: ['strings', 'errors', 'ansi green'],
+        ramp: ['#C9DCA0', '#A9C46A', '#6E8C33', '#5E7C2B', '#7E2438']
+      },
+      {
+        id: 'oncidium', num: 'V', name: 'Oncidium', latin: 'Oncidium sphacelatum',
+        blurb: 'Dozens of small gold flowers on fine branching sprays, each lip barred with mahogany. Numbers, constants and warnings carry Oncidium\u2019s gold; its mahogany warms the decorators.',
+        roles: ['numbers', 'constants', 'ansi yellow'],
+        ramp: ['#FFF0C4', '#FFDD8A', '#F5C566', '#D19134', '#8A5514']
+      }
+    ];
 
-/* ---------------- toast + clipboard ---------------- */
-let tt;
-function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2200); }
-async function copyText(s) {
-  try { await navigator.clipboard.writeText(s); }
-  catch (e) {
-    const ta = document.createElement('textarea'); ta.value = s; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (_) {} ta.remove();
-  }
-}
-
-/* ---------------- species data + botanical plates ---------------- */
-const SPECIES = [
-  { id: 'phalaenopsis', num: 'I', name: 'Phalaenopsis', latin: 'Phalaenopsis amabilis',
-    blurb: 'Broad moth-wing petals floating over a saturated magenta lip — the orchid on every windowsill. Phalaenopsis lends Orchids its pinks: function calls, the caret, and every soft glow of ANSI magenta.',
-    roles: ['function calls', 'the caret', 'ansi magenta'],
-    ramp: ['#FFD9EC', '#FFC1DD', '#FA8FC5', '#D64E95', '#B0256B'] },
-  { id: 'vanda', num: 'II', name: 'Vanda', latin: 'Vanda coerulea',
-    blurb: 'The rare orchid that is truly blue: tessellated violet checks on flat, rounded petals. Its violet anchors the theme — keywords and control flow speak in Vanda, types in its deeper blue.',
-    roles: ['keywords', 'types', 'ansi blue'],
-    ramp: ['#E4DEFF', '#BFB2FA', '#927FE8', '#6D48D6', '#432F92'] },
-  { id: 'cattleya', num: 'III', name: 'Cattleya', latin: 'Cattleya trianae',
-    blurb: 'Ruffled lavender petals wrapped around a frilled magenta lip with a gilded throat. Cattleya becomes the quiet violet of selections, of self and this — the colors that hold, not shout.',
-    roles: ['selection', 'self · this', 'violet accents'],
-    ramp: ['#F6DCF6', '#E3A9E8', '#C86FD4', '#9C3EB5', '#5E2170'] },
-  { id: 'paphiopedilum', num: 'IV', name: 'Paphiopedilum', latin: 'Paphiopedilum rothschildianum',
-    blurb: 'A waxy burgundy pouch beneath moss-green sepals, striped like stained glass. Its moss becomes every string literal; its burgundy, every error — with a gold rim for the rare warning.',
-    roles: ['strings', 'errors', 'ansi green'],
-    ramp: ['#C9DCA0', '#A9C46A', '#6E8C33', '#5E7C2B', '#7E2438'] },
-  { id: 'oncidium', num: 'V', name: 'Oncidium', latin: 'Oncidium sphacelatum',
-    blurb: 'Dozens of small gold flowers on fine branching sprays, each lip barred with mahogany. Numbers, constants and warnings carry Oncidium\u2019s gold; its mahogany warms the decorators.',
-    roles: ['numbers', 'constants', 'ansi yellow'],
-    ramp: ['#FFF0C4', '#FFDD8A', '#F5C566', '#D19134', '#8A5514'] }
-];
-
-const ART = {
-  phalaenopsis: `<svg viewBox="0 0 260 260" role="img" aria-label="Phalaenopsis illustration">
+    const ART = {
+      phalaenopsis: `<svg viewBox="0 0 260 260" role="img" aria-label="Phalaenopsis illustration">
     <path d="M134 250 C 126 210 122 176 130 146" stroke="#4A5F1E" stroke-width="5" fill="none" stroke-linecap="round"/>
     <path d="M128 176 C 108 172 94 158 96 144 C 98 132 114 130 124 140 C 132 148 134 162 128 176 Z" fill="#FFC1DD"/>
     <path d="M110 152 C 104 158 106 168 116 173" fill="none" stroke="#D64E95" stroke-width="3" stroke-linecap="round"/>
@@ -608,7 +1813,7 @@ const ART = {
     <path d="M124 166 C 122 172 118 176 112 178" fill="none" stroke="#B0256B" stroke-width="3" stroke-linecap="round"/>
     <path d="M136 166 C 138 172 142 176 148 178" fill="none" stroke="#B0256B" stroke-width="3" stroke-linecap="round"/>
   </svg>`,
-  vanda: `<svg viewBox="0 0 260 260" role="img" aria-label="Vanda illustration">
+      vanda: `<svg viewBox="0 0 260 260" role="img" aria-label="Vanda illustration">
     <defs><pattern id="vcheck" width="16" height="16" patternUnits="userSpaceOnUse">
       <rect width="16" height="16" fill="#927FE8"/><rect width="8" height="8" fill="#CFC5FA"/><rect x="8" y="8" width="8" height="8" fill="#CFC5FA"/>
     </pattern></defs>
@@ -632,7 +1837,7 @@ const ART = {
     <path d="M120 182 c 6 -4 14 -4 20 0" stroke="#E4DEFF" stroke-width="3" fill="none" stroke-linecap="round"/>
     <circle cx="126" cy="160" r="2.4" fill="#F2C566"/><circle cx="134" cy="160" r="2.4" fill="#F2C566"/>
   </svg>`,
-  cattleya: `<svg viewBox="0 0 260 260" role="img" aria-label="Cattleya illustration">
+      cattleya: `<svg viewBox="0 0 260 260" role="img" aria-label="Cattleya illustration">
     <path d="M130 250 C 130 214 130 192 130 170" stroke="#4A5F1E" stroke-width="5" fill="none" stroke-linecap="round"/>
     <path d="M130 28 C 121 48 121 72 130 90 C 139 72 139 48 130 28 Z" fill="#9C3EB5"/>
     <path d="M70 58 C 76 80 92 96 114 104 C 112 82 94 64 70 58 Z" fill="#8A35A3"/>
@@ -646,7 +1851,7 @@ const ART = {
     <path d="M121 126 C 117 132 117 140 121 148" stroke="#F2C566" stroke-width="3" fill="none" stroke-linecap="round"/>
     <path d="M139 126 C 143 132 143 140 139 148" stroke="#F2C566" stroke-width="3" fill="none" stroke-linecap="round"/>
   </svg>`,
-  paphiopedilum: `<svg viewBox="0 0 260 260" role="img" aria-label="Paphiopedilum illustration">
+      paphiopedilum: `<svg viewBox="0 0 260 260" role="img" aria-label="Paphiopedilum illustration">
     <path d="M130 250 C 130 228 130 212 130 198" stroke="#4A5F1E" stroke-width="5" fill="none" stroke-linecap="round"/>
     <path d="M118 248 C 92 210 82 160 96 112 C 102 116 110 122 114 132 C 100 176 104 216 122 246 Z" fill="#4A5F1E"/>
     <path d="M142 248 C 168 210 178 160 164 112 C 158 116 150 122 146 132 C 160 176 156 216 138 246 Z" fill="#5E7C2B"/>
@@ -662,7 +1867,7 @@ const ART = {
     <path d="M130 130 C 106 130 88 144 87 166 C 86 186 106 198 130 198 C 154 198 174 186 173 166 C 172 144 154 130 130 130 Z" fill="#96304A"/>
     <path d="M96 132 C 106 122 154 122 164 132" stroke="#D19134" stroke-width="4" fill="none" stroke-linecap="round"/>
   </svg>`,
-  oncidium: `<svg viewBox="0 0 260 260" role="img" aria-label="Oncidium illustration">
+      oncidium: `<svg viewBox="0 0 260 260" role="img" aria-label="Oncidium illustration">
     <defs><g id="oncf">
       <ellipse cx="-7" cy="-14" rx="4.5" ry="7" fill="#D19134" transform="rotate(-32 -7 -14)"/>
       <ellipse cx="7" cy="-14" rx="4.5" ry="7" fill="#D19134" transform="rotate(32 7 -14)"/>
@@ -686,25 +1891,25 @@ const ART = {
     <circle cx="222" cy="110" r="5" fill="#E8B06A"/>
     <circle cx="139" cy="82" r="4.5" fill="#E8B06A"/>
   </svg>`
-};
+    };
 
-/* ---------------- species plate viewer ---------------- */
-let spIdx = 0;
-const plateEl = $('plate');
-const spIndex = $('spIndex');
-SPECIES.forEach((s, i) => {
-  const b = document.createElement('button');
-  b.className = 'sp-item'; b.setAttribute('role', 'tab');
-  b.innerHTML = `<span class="n">${String(i + 1).padStart(2, '0')}</span><span class="nm">${s.name}</span>`;
-  b.addEventListener('click', () => { spIdx = i; renderSpecies(); });
-  spIndex.appendChild(b);
-});
-const spBtns = [...spIndex.children];
+    /* ---------------- species plate viewer ---------------- */
+    let spIdx = 0;
+    const plateEl = $('plate');
+    const spIndex = $('spIndex');
+    SPECIES.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.className = 'sp-item'; b.setAttribute('role', 'tab');
+      b.innerHTML = `<span class="n">${String(i + 1).padStart(2, '0')}</span><span class="nm">${s.name}</span>`;
+      b.addEventListener('click', () => { spIdx = i; renderSpecies(); });
+      spIndex.appendChild(b);
+    });
+    const spBtns = [...spIndex.children];
 
-function renderSpecies() {
-  const s = SPECIES[spIdx];
-  spBtns.forEach((b, i) => { b.classList.toggle('on', i === spIdx); b.setAttribute('aria-selected', i === spIdx); b.style.setProperty('--sp', SPECIES[i].ramp[3]); });
-  plateEl.innerHTML = `
+    function renderSpecies() {
+      const s = SPECIES[spIdx];
+      spBtns.forEach((b, i) => { b.classList.toggle('on', i === spIdx); b.setAttribute('aria-selected', i === spIdx); b.style.setProperty('--sp', SPECIES[i].ramp[3]); });
+      plateEl.innerHTML = `
     <div class="plate-head">
       <span class="plate-tab">Plate ${s.num} — Orchidaceae</span>
       <div class="plate-arrows">
@@ -723,129 +1928,129 @@ function renderSpecies() {
         <div class="roles"><span class="rl">colors →</span>${s.roles.map(r => `<i style="--rc:${s.ramp[2]}">${r}</i>`).join('<span style="color:var(--t-comment)"> · </span>')}</div>
       </div>
     </div>`;
-  plateEl.querySelectorAll('[data-hex]').forEach(b => b.addEventListener('click', () => { copyText(b.dataset.hex); toast('Copied ' + b.dataset.hex); }));
-  $('spPrev').addEventListener('click', () => { spIdx = (spIdx + 4) % 5; renderSpecies(); });
-  $('spNext').addEventListener('click', () => { spIdx = (spIdx + 1) % 5; renderSpecies(); });
-  const inner = plateEl.querySelector('.plate-inner');
-  inner.classList.add('swap');
-}
-renderSpecies();
-plateEl.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft') { spIdx = (spIdx + 4) % 5; renderSpecies(); e.preventDefault(); }
-  if (e.key === 'ArrowRight') { spIdx = (spIdx + 1) % 5; renderSpecies(); e.preventDefault(); }
-});
-
-/* ---------------- marquee ---------------- */
-(function () {
-  const colors = ['#FA8FC5', '#B79CF5', '#8FB2FF', '#A9CC7E', '#F2C566', '#C86FD4', '#D19134', '#927FE8', '#B0256B', '#6E8C33'];
-  const half = `<div class="mq-half">${colors.map(c => `<span class="mq"><i style="background:${c}"></i>${c}</span>`).join('')}</div>`;
-  $('mqTrack').innerHTML = half + half.replace('mq-half', 'mq-half" aria-hidden="true');
-})();
-
-/* ---------------- tiny syntax highlighter ---------------- */
-const escHtml = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-const rx = (src, fl = 'y') => new RegExp(src, fl);
-const kwRe = list => rx('(?:' + list.join('|') + ')\\b');
-const KW = {
-  ts: ['const','let','var','function','return','if','else','for','while','do','switch','case','break','continue','new','delete','typeof','instanceof','in','of','import','export','from','default','class','extends','implements','interface','type','enum','declare','namespace','async','await','try','catch','finally','throw','as','is','keyof','readonly','public','private','protected','static','get','set','yield','void','satisfies'],
-  py: ['def','class','return','if','elif','else','for','while','break','continue','pass','import','from','as','with','lambda','yield','async','await','try','except','finally','raise','global','nonlocal','del','assert','and','or','not','in','is','match','case'],
-  rs: ['fn','let','mut','pub','struct','enum','impl','match','if','else','for','while','loop','return','use','mod','crate','as','const','static','ref','move','where','trait','type','dyn','async','await','unsafe','in','break','continue','super','extern']
-};
-const RULES = {
-  ts: [
-    ['c', rx('\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/')],
-    ['S', rx('`(?:\\\\[\\s\\S]|[^`\\\\])*`|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'')],
-    ['d', rx('@[A-Za-z_$][\\w$]*')],
-    ['n', rx('0[xX][\\da-fA-F_]+n?|\\d[\\d_]*(?:\\.[\\d_]*)?(?:[eE][+-]?\\d+)?n?')],
-    ['k', kwRe(KW.ts)],
-    ['x', rx('(?:true|false|null|undefined|this|super|NaN|Infinity)\\b')]
-  ],
-  py: [
-    ['c', rx('#.*')],
-    ['S', rx('[rbfu]{0,2}(?:\'\'\'[\\s\\S]*?\'\'\'|"""[\\s\\S]*?"""|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\')')],
-    ['d', rx('@[A-Za-z_][\\w.]*')],
-    ['n', rx('\\d[\\d_]*(?:\\.\\d*)?(?:[eE][+-]?\\d+)?[jJ]?')],
-    ['x', rx('(?:self|cls)\\b')],
-    ['k', kwRe(KW.py)],
-    ['n', rx('(?:True|False|None|__name__|__main__)\\b')]
-  ],
-  rs: [
-    ['c', rx('//[^\\n]*')],
-    ['d', rx('#!?\\[[^\\]]*\\]')],
-    ['S', rx('(?:b?r|b)?"(?:\\\\[\\s\\S]|[^"\\\\])*"')],
-    ['s', rx('\'(?:\\\\.|[^\\\\\'])\'')],
-    ['x', rx('\'[a-z_][\\w]*(?!\'?)')],
-    ['n', rx('\\d[\\d_]*(?:\\.[\\d_]+)?(?:[iuf](?:8|16|32|64|128|size))?')],
-    ['k', kwRe(KW.rs)],
-    ['t', rx('(?:u8|u16|u32|u64|u128|usize|i8|i16|i32|i64|i128|isize|f32|f64|bool|char|str|String|Vec|Option|Result|Some|None|Ok|Err)\\b')]
-  ]
-};
-function classify(word, code, pos, lang) {
-  const after = code.slice(pos + word.length).replace(/^[ \t]*/, '');
-  const up = /^[A-Z]/.test(word);
-  if (lang === 'rs') {
-    if (after[0] === '!') return 'd';
-    if (up) return 't';
-    if (after.startsWith('(')) return 'f';
-    return 'v';
-  }
-  if (lang === 'py') {
-    if (up) return 't';
-    if (after.startsWith('(')) return 'f';
-    if (after.startsWith('.') && false) return 'v';
-    return 'v';
-  }
-  if (up) return 't';
-  if (after.startsWith('(')) return 'f';
-  return 'v';
-}
-const span = (cls, text) => `<span class="tk-${cls}">${escHtml(text)}</span>`;
-function escStr(s) {
-  const e = escHtml(s);
-  return e.replace(/\\(?:x[0-9a-fA-F]{2}|u\{?[0-9a-fA-F]{1,6}\}?|[nrt0'"\\]|\d)/g, m => `<span class="tk-e">${m}</span>`);
-}
-function stringSpan(raw, lang) {
-  const open = lang === 'ts' ? raw.startsWith('`') : lang === 'py' ? /f/i.test(raw.slice(0, 2)) : false;
-  if (!open) return `<span class="tk-s">${escStr(raw)}</span>`;
-  let out = '<span class="tk-s">', buf = '', i = 0;
-  const flush = () => { if (buf) { out += escStr(buf); buf = ''; } };
-  while (i < raw.length) {
-    const hit = lang === 'ts' ? (raw[i] === '$' && raw[i + 1] === '{') : (raw[i] === '{' && raw[i + 1] !== '{');
-    if (hit) {
-      flush(); out += '</span>';
-      let depth = 1, j = i + (lang === 'ts' ? 2 : 1); const start = j;
-      while (j < raw.length && depth > 0) { if (raw[j] === '{') depth++; else if (raw[j] === '}') depth--; if (depth > 0) j++; }
-      out += `<span class="tk-i">${highlight(raw.slice(start, j), lang)}</span><span class="tk-s">`;
-      i = j + 1;
-    } else { buf += raw[i++]; }
-  }
-  flush(); out += '</span>';
-  return out;
-}
-function emit(cls, text, lang) { return cls === 'S' ? stringSpan(text, lang) : span(cls, text); }
-function highlight(code, lang) {
-  const rules = RULES[lang];
-  let out = '', i = 0;
-  while (i < code.length) {
-    let done = false;
-    for (const [cls, re] of rules) {
-      re.lastIndex = i;
-      const m = re.exec(code);
-      if (m && m[0]) { out += emit(cls, m[0], lang); i += m[0].length; done = true; break; }
+      plateEl.querySelectorAll('[data-hex]').forEach(b => b.addEventListener('click', () => { copyText(b.dataset.hex); toast('Copied ' + b.dataset.hex); }));
+      $('spPrev').addEventListener('click', () => { spIdx = (spIdx + 4) % 5; renderSpecies(); });
+      $('spNext').addEventListener('click', () => { spIdx = (spIdx + 1) % 5; renderSpecies(); });
+      const inner = plateEl.querySelector('.plate-inner');
+      inner.classList.add('swap');
     }
-    if (done) continue;
-    const ch = code[i];
-    if (/\s/.test(ch)) { out += ch; i++; continue; }
-    const id = /^[A-Za-z_$][\w$]*/.exec(code.slice(i));
-    if (id) { out += span(classify(id[0], code, i, lang), id[0]); i += id[0].length; continue; }
-    out += span(/[+\-*/%=<>!&|^~?:]/.test(ch) ? 'o' : 'p', ch); i++;
-  }
-  return out;
-}
+    renderSpecies();
+    plateEl.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') { spIdx = (spIdx + 4) % 5; renderSpecies(); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { spIdx = (spIdx + 1) % 5; renderSpecies(); e.preventDefault(); }
+    });
 
-/* ---------------- code samples ---------------- */
-const SAMPLES = {
-ts: `type Species =
+    /* ---------------- marquee ---------------- */
+    (function () {
+      const colors = ['#FA8FC5', '#B79CF5', '#8FB2FF', '#A9CC7E', '#F2C566', '#C86FD4', '#D19134', '#927FE8', '#B0256B', '#6E8C33'];
+      const half = `<div class="mq-half">${colors.map(c => `<span class="mq"><i style="background:${c}"></i>${c}</span>`).join('')}</div>`;
+      $('mqTrack').innerHTML = half + half.replace('mq-half', 'mq-half" aria-hidden="true');
+    })();
+
+    /* ---------------- tiny syntax highlighter ---------------- */
+    const escHtml = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    const rx = (src, fl = 'y') => new RegExp(src, fl);
+    const kwRe = list => rx('(?:' + list.join('|') + ')\\b');
+    const KW = {
+      ts: ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'new', 'delete', 'typeof', 'instanceof', 'in', 'of', 'import', 'export', 'from', 'default', 'class', 'extends', 'implements', 'interface', 'type', 'enum', 'declare', 'namespace', 'async', 'await', 'try', 'catch', 'finally', 'throw', 'as', 'is', 'keyof', 'readonly', 'public', 'private', 'protected', 'static', 'get', 'set', 'yield', 'void', 'satisfies'],
+      py: ['def', 'class', 'return', 'if', 'elif', 'else', 'for', 'while', 'break', 'continue', 'pass', 'import', 'from', 'as', 'with', 'lambda', 'yield', 'async', 'await', 'try', 'except', 'finally', 'raise', 'global', 'nonlocal', 'del', 'assert', 'and', 'or', 'not', 'in', 'is', 'match', 'case'],
+      rs: ['fn', 'let', 'mut', 'pub', 'struct', 'enum', 'impl', 'match', 'if', 'else', 'for', 'while', 'loop', 'return', 'use', 'mod', 'crate', 'as', 'const', 'static', 'ref', 'move', 'where', 'trait', 'type', 'dyn', 'async', 'await', 'unsafe', 'in', 'break', 'continue', 'super', 'extern']
+    };
+    const RULES = {
+      ts: [
+        ['c', rx('\\/\\/.*|\\/\\*[\\s\\S]*?\\*\\/')],
+        ['S', rx('`(?:\\\\[\\s\\S]|[^`\\\\])*`|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'')],
+        ['d', rx('@[A-Za-z_$][\\w$]*')],
+        ['n', rx('0[xX][\\da-fA-F_]+n?|\\d[\\d_]*(?:\\.[\\d_]*)?(?:[eE][+-]?\\d+)?n?')],
+        ['k', kwRe(KW.ts)],
+        ['x', rx('(?:true|false|null|undefined|this|super|NaN|Infinity)\\b')]
+      ],
+      py: [
+        ['c', rx('#.*')],
+        ['S', rx('[rbfu]{0,2}(?:\'\'\'[\\s\\S]*?\'\'\'|"""[\\s\\S]*?"""|"(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\')')],
+        ['d', rx('@[A-Za-z_][\\w.]*')],
+        ['n', rx('\\d[\\d_]*(?:\\.\\d*)?(?:[eE][+-]?\\d+)?[jJ]?')],
+        ['x', rx('(?:self|cls)\\b')],
+        ['k', kwRe(KW.py)],
+        ['n', rx('(?:True|False|None|__name__|__main__)\\b')]
+      ],
+      rs: [
+        ['c', rx('//[^\\n]*')],
+        ['d', rx('#!?\\[[^\\]]*\\]')],
+        ['S', rx('(?:b?r|b)?"(?:\\\\[\\s\\S]|[^"\\\\])*"')],
+        ['s', rx('\'(?:\\\\.|[^\\\\\'])\'')],
+        ['x', rx('\'[a-z_][\\w]*(?!\'?)')],
+        ['n', rx('\\d[\\d_]*(?:\\.[\\d_]+)?(?:[iuf](?:8|16|32|64|128|size))?')],
+        ['k', kwRe(KW.rs)],
+        ['t', rx('(?:u8|u16|u32|u64|u128|usize|i8|i16|i32|i64|i128|isize|f32|f64|bool|char|str|String|Vec|Option|Result|Some|None|Ok|Err)\\b')]
+      ]
+    };
+    function classify(word, code, pos, lang) {
+      const after = code.slice(pos + word.length).replace(/^[ \t]*/, '');
+      const up = /^[A-Z]/.test(word);
+      if (lang === 'rs') {
+        if (after[0] === '!') return 'd';
+        if (up) return 't';
+        if (after.startsWith('(')) return 'f';
+        return 'v';
+      }
+      if (lang === 'py') {
+        if (up) return 't';
+        if (after.startsWith('(')) return 'f';
+        if (after.startsWith('.') && false) return 'v';
+        return 'v';
+      }
+      if (up) return 't';
+      if (after.startsWith('(')) return 'f';
+      return 'v';
+    }
+    const span = (cls, text) => `<span class="tk-${cls}">${escHtml(text)}</span>`;
+    function escStr(s) {
+      const e = escHtml(s);
+      return e.replace(/\\(?:x[0-9a-fA-F]{2}|u\{?[0-9a-fA-F]{1,6}\}?|[nrt0'"\\]|\d)/g, m => `<span class="tk-e">${m}</span>`);
+    }
+    function stringSpan(raw, lang) {
+      const open = lang === 'ts' ? raw.startsWith('`') : lang === 'py' ? /f/i.test(raw.slice(0, 2)) : false;
+      if (!open) return `<span class="tk-s">${escStr(raw)}</span>`;
+      let out = '<span class="tk-s">', buf = '', i = 0;
+      const flush = () => { if (buf) { out += escStr(buf); buf = ''; } };
+      while (i < raw.length) {
+        const hit = lang === 'ts' ? (raw[i] === '$' && raw[i + 1] === '{') : (raw[i] === '{' && raw[i + 1] !== '{');
+        if (hit) {
+          flush(); out += '</span>';
+          let depth = 1, j = i + (lang === 'ts' ? 2 : 1); const start = j;
+          while (j < raw.length && depth > 0) { if (raw[j] === '{') depth++; else if (raw[j] === '}') depth--; if (depth > 0) j++; }
+          out += `<span class="tk-i">${highlight(raw.slice(start, j), lang)}</span><span class="tk-s">`;
+          i = j + 1;
+        } else { buf += raw[i++]; }
+      }
+      flush(); out += '</span>';
+      return out;
+    }
+    function emit(cls, text, lang) { return cls === 'S' ? stringSpan(text, lang) : span(cls, text); }
+    function highlight(code, lang) {
+      const rules = RULES[lang];
+      let out = '', i = 0;
+      while (i < code.length) {
+        let done = false;
+        for (const [cls, re] of rules) {
+          re.lastIndex = i;
+          const m = re.exec(code);
+          if (m && m[0]) { out += emit(cls, m[0], lang); i += m[0].length; done = true; break; }
+        }
+        if (done) continue;
+        const ch = code[i];
+        if (/\s/.test(ch)) { out += ch; i++; continue; }
+        const id = /^[A-Za-z_$][\w$]*/.exec(code.slice(i));
+        if (id) { out += span(classify(id[0], code, i, lang), id[0]); i += id[0].length; continue; }
+        out += span(/[+\-*/%=<>!&|^~?:]/.test(ch) ? 'o' : 'p', ch); i++;
+      }
+      return out;
+    }
+
+    /* ---------------- code samples ---------------- */
+    const SAMPLES = {
+      ts: `type Species =
   | "phalaenopsis" | "vanda" | "cattleya"
   | "paphiopedilum" | "oncidium";
 
@@ -883,7 +2088,7 @@ const onTheSill: Bloom = {
 };
 
 console.log(\`next bloom: \${nextBloom(onTheSill).toDateString()}\`);`,
-py: `from dataclasses import dataclass
+      py: `from dataclasses import dataclass
 from datetime import date, timedelta
 from enum import Enum, auto
 
@@ -914,7 +2119,7 @@ def next_bloom(orchid: Orchid, today: date | None = None) -> date:
 if __name__ == "__main__":
     vanda = Orchid(Species.VANDA, potted_on=date(2025, 3, 14))
     print(f"{vanda.species.name.lower()} again on {next_bloom(vanda):%b %d}")`,
-rs: `use std::fmt;
+      rs: `use std::fmt;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Species {
@@ -955,259 +2160,272 @@ fn main() {
         println!("{} rests for {} days", orchid.species, orchid.cycle_days);
     }
 }`
-};
-const LANGS = { ts: 'ts', py: 'py', rs: 'rs' };
-let langIdx = 'ts';
+    };
+    const LANGS = { ts: 'ts', py: 'py', rs: 'rs' };
+    let langIdx = 'ts';
 
-function renderCode() {
-  const lang = langIdx;
-  const lines = SAMPLES[lang].split('\n');
-  $('codeArea').innerHTML = lines.map((l, i) =>
-    `<div class="cl"><span class="cn">${i + 1}</span><span class="cc">${highlight(l, lang) || ' '}</span></div>`
-  ).join('');
-  $('fileName').textContent = 'orchids.' + lang;
-}
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-  document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
-  t.classList.add('on'); langIdx = LANGS[t.dataset.lang]; renderCode();
-}));
+    function renderCode() {
+      const lang = langIdx;
+      const lines = SAMPLES[lang].split('\n');
+      $('codeArea').innerHTML = lines.map((l, i) =>
+        `<div class="cl"><span class="cn">${i + 1}</span><span class="cc">${highlight(l, lang) || ' '}</span></div>`
+      ).join('');
+      $('fileName').textContent = 'orchids.' + lang;
+    }
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+      t.classList.add('on'); langIdx = LANGS[t.dataset.lang]; renderCode();
+    }));
 
-/* ---------------- preview variant (independent of page mode) ---------------- */
-const pvStack = $('pvStack');
-let pm = document.documentElement.dataset.mode;
-function setPm(m) {
-  pm = m;
-  pvStack.classList.toggle('pm-dark', m === 'dark');
-  pvStack.classList.toggle('pm-light', m === 'light');
-  $('pmDark').classList.toggle('on', m === 'dark');
-  $('pmLight').classList.toggle('on', m === 'light');
-  $('pmBadge').textContent = 'Orchids ' + cap(m);
-  $('pmBadge2').textContent = 'Orchids ' + cap(m);
-}
-$('pmDark').addEventListener('click', () => setPm('dark'));
-$('pmLight').addEventListener('click', () => setPm('light'));
+    /* ---------------- preview variant (independent of page mode) ---------------- */
+    const pvStack = $('pvStack');
+    let pm = document.documentElement.dataset.mode;
+    function setPm(m) {
+      pm = m;
+      pvStack.classList.toggle('pm-dark', m === 'dark');
+      pvStack.classList.toggle('pm-light', m === 'light');
+      $('pmDark').classList.toggle('on', m === 'dark');
+      $('pmLight').classList.toggle('on', m === 'light');
+      $('pmBadge').textContent = 'Orchids ' + cap(m);
+      $('pmBadge2').textContent = 'Orchids ' + cap(m);
+    }
+    $('pmDark').addEventListener('click', () => setPm('dark'));
+    $('pmLight').addEventListener('click', () => setPm('light'));
 
-/* ---------------- page mode toggle ---------------- */
-$('modeBtn').addEventListener('click', () => {
-  const m = document.documentElement.dataset.mode === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.mode = m;
-  try { localStorage.setItem('orchids-mode', m); } catch (e) {}
-  setPm(m);
-  toast('Orchids ' + cap(m));
-});
+    /* ---------------- page mode toggle ---------------- */
+    $('modeBtn').addEventListener('click', () => {
+      const m = document.documentElement.dataset.mode === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.mode = m;
+      try { localStorage.setItem('orchids-mode', m); } catch (e) { }
+      setPm(m);
+      toast('Orchids ' + cap(m));
+    });
 
-/* ---------------- reference tables ---------------- */
-const REF = [
-  ['keyword', 'kw'], ['function', 'fn'], ['type', 'type'], ['string', 'str'],
-  ['number · constant', 'num'], ['operator', 'op'], ['punctuation', 'punc'],
-  ['decorator', 'deco'], ['escape · regex', 'esc'], ['self · this', 'self'],
-  ['comment', 'comment'], ['error', 'error'], ['caret', 'cursor'], ['selection', 'selection']
-];
-(function () {
-  const tb = $('refTable').querySelector('tbody');
-  tb.innerHTML = REF.map(([name, key]) => `
+    /* ---------------- reference tables ---------------- */
+    const REF = [
+      ['keyword', 'kw'], ['function', 'fn'], ['type', 'type'], ['string', 'str'],
+      ['number · constant', 'num'], ['operator', 'op'], ['punctuation', 'punc'],
+      ['decorator', 'deco'], ['escape · regex', 'esc'], ['self · this', 'self'],
+      ['comment', 'comment'], ['error', 'error'], ['caret', 'cursor'], ['selection', 'selection']
+    ];
+    (function () {
+      const tb = $('refTable').querySelector('tbody');
+      tb.innerHTML = REF.map(([name, key]) => `
     <tr>
       <td class="tok">${name}</td>
       <td><button class="hexcell" data-hex="${TOKENS.dark[key]}" style="--c:${TOKENS.dark[key]}"><i></i>${TOKENS.dark[key]}</button></td>
       <td><button class="hexcell" data-hex="${TOKENS.light[key]}" style="--c:${TOKENS.light[key]}"><i></i>${TOKENS.light[key]}</button></td>
     </tr>`).join('');
-  tb.querySelectorAll('[data-hex]').forEach(b => b.addEventListener('click', () => { copyText(b.dataset.hex); toast('Copied ' + b.dataset.hex); }));
+      tb.querySelectorAll('[data-hex]').forEach(b => b.addEventListener('click', () => { copyText(b.dataset.hex); toast('Copied ' + b.dataset.hex); }));
 
-  const ANSI_NAMES = ['black','red','green','yellow','blue','magenta','cyan','white'];
-  const g = $('ansiGrid');
-  const renderAnsi = () => {
-    const v = document.documentElement.dataset.mode, T = TOKENS[v];
-    g.innerHTML = T.ansi.map((c, i) => `
+      const ANSI_NAMES = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
+      const g = $('ansiGrid');
+      const renderAnsi = () => {
+        const v = document.documentElement.dataset.mode, T = TOKENS[v];
+        g.innerHTML = T.ansi.map((c, i) => `
       <div class="ansi-cell">
         <div class="blk" style="--c:${c}"></div>
         <button data-hex="${c}" aria-label="Copy ${c}">${i < 8 ? ANSI_NAMES[i] : 'bright ' + ANSI_NAMES[i - 8]}<br>${c}</button>
       </div>`).join('');
-    g.querySelectorAll('[data-hex]').forEach(b => b.addEventListener('click', () => { copyText(b.dataset.hex); toast('Copied ' + b.dataset.hex); }));
-  };
-  renderAnsi();
-  $('modeBtn').addEventListener('click', renderAnsi);
-})();
+        g.querySelectorAll('[data-hex]').forEach(b => b.addEventListener('click', () => { copyText(b.dataset.hex); toast('Copied ' + b.dataset.hex); }));
+      };
+      renderAnsi();
+      $('modeBtn').addEventListener('click', renderAnsi);
+    })();
 
-$('cssVarsBtn').addEventListener('click', () => {
-  const out = ['/* Orchids · CSS custom properties — sampled from five orchid species */'];
-  for (const v of ['dark', 'light']) {
-    const T = TOKENS[v];
-    out.push('', `/* Orchids ${cap(v)} */`, ':root {');
-    for (const k of ['bg','fg','comment','kw','fn','type','str','num','op','punc','deco','esc','self','error','cursor','selection'])
-      out.push(`  --orchids-${k}: ${T[k]};`);
-    T.ansi.forEach((c, i) => out.push(`  --orchids-ansi-${i}: ${c};`));
-    out.push('}');
-  }
-  copyText(out.join('\n') + '\n');
-  toast('CSS variables copied');
-});
-
-/* ---------------- theme file generators ---------------- */
-const hex2rgb = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
-
-function genVSCode(v) {
-  const T = TOKENS[v], A = T.ansi;
-  const tc = (scope, fg, style) => ({ scope, settings: style ? { foreground: fg, fontStyle: style } : { foreground: fg } });
-  return JSON.stringify({
-    name: T.name, type: v, semanticHighlighting: true,
-    semanticTokenColors: { function: T.fn, type: T.type, 'variable.constant': T.num, macro: T.deco, 'string.escape': T.esc },
-    colors: {
-      'editor.background': T.bg, 'editor.foreground': T.fg,
-      'editor.lineHighlightBackground': T.lineHl + '80',
-      'editorLineNumber.foreground': T.lno, 'editorLineNumber.activeForeground': T.lna,
-      'editorCursor.foreground': T.cursor, 'editor.selectionBackground': T.selection,
-      'editorIndentGuide.background': T.punc + '40', 'editorIndentGuide.activeBackground': T.punc,
-      'editorWhitespace.foreground': T.punc + '66', 'editorBracketMatch.border': T.deco,
-      'editorWidget.background': T.panel, 'editorSuggestWidget.background': T.panel,
-      'sideBar.background': T.panel, 'activityBar.background': T.bg,
-      'statusBar.background': T.panel, 'statusBar.foreground': T.fg,
-      'titleBar.activeBackground': T.bg, 'menu.background': T.panel,
-      'list.activeSelectionBackground': T.selection,
-      'scrollbarSlider.background': T.punc + '33',
-      'editorError.foreground': T.error, 'editorWarning.foreground': T.warning,
-      'diffEditor.insertedTextBackground': T.added + '22', 'diffEditor.removedTextBackground': T.removed + '22',
-      'gitDecoration.addedResourceForeground': T.added, 'gitDecoration.deletedResourceForeground': T.removed, 'gitDecoration.modifiedResourceForeground': T.changed,
-      'terminal.background': T.bg, 'terminal.foreground': T.fg, 'terminalCursor.foreground': T.cursor,
-      ...Object.fromEntries(A.map((c, i) => ['terminal.ansi' + (i < 8 ? ['Black','Red','Green','Yellow','Blue','Magenta','Cyan','White'][i] : 'Bright' + ['Black','Red','Green','Yellow','Blue','Magenta','Cyan','White'][i - 8]), c]))
-    },
-    tokenColors: [
-      tc(['comment'], T.comment, 'italic'),
-      tc(['keyword', 'storage.type', 'storage.modifier', 'keyword.control'], T.kw),
-      tc(['entity.name.function', 'support.function', 'variable.function', 'meta.function-call'], T.fn),
-      tc(['entity.name.type', 'entity.name.class', 'support.type', 'support.class', 'entity.name.enum'], T.type),
-      tc(['string'], T.str),
-      tc(['constant.numeric', 'constant.language', 'support.constant', 'variable.other.constant'], T.num),
-      tc(['constant.character.escape'], T.esc),
-      tc(['entity.name.tag'], T.fn),
-      tc(['entity.other.attribute-name', 'meta.decorator'], T.deco, 'italic'),
-      tc(['keyword.operator'], T.op),
-      tc(['punctuation'], T.punc),
-      tc(['invalid'], T.error)
-    ]
-  }, null, 2);
-}
-function genZed(v) {
-  const T = TOKENS[v];
-  const s = (c, i) => i ? { color: c, font_style: 'italic' } : { color: c };
-  return JSON.stringify({
-    themes: [{
-      name: T.name, appearance: v,
-      style: {
-        background: T.bg, surface: T.panel, 'elevated_surface.background': T.panel,
-        text: T.fg, 'text.muted': T.comment, 'text.accent': T.kw,
-        border: T.line, 'border.focused': T.kw, 'border.selected': T.kw,
-        'element.hover': T.lineHl, 'element.active': T.selection, 'element.selected': T.selection,
-        'editor.background': T.bg, 'editor.foreground': T.fg, 'editor.line_number': T.lno,
-        'editor.active_line': T.lineHl, 'editor.selection': T.selection, cursor: T.cursor,
-        'terminal.background': T.bg, 'terminal.foreground': T.fg,
-        ...Object.fromEntries(T.ansi.map((c, i) => ['terminal.ansi_' + i, c])),
-        link: T.type, created: T.added, deleted: T.removed, modified: T.changed,
-        error: T.error, warning: T.warning, info: T.type, hint: T.comment,
-        syntax: {
-          comment: s(T.comment, 1), string: s(T.str), 'string.escape': s(T.esc),
-          keyword: s(T.kw), function: s(T.fn), type: s(T.type), constructor: s(T.type),
-          number: s(T.num), constant: s(T.num), operator: s(T.op),
-          punctuation: s(T.punc), 'punctuation.bracket': s(T.punc), 'punctuation.delimiter': s(T.punc),
-          variable: s(T.fg), property: s(T.fg), attribute: s(T.deco, 1), tag: s(T.fn), label: s(T.deco)
-        }
+    $('cssVarsBtn').addEventListener('click', () => {
+      const out = ['/* Orchids · CSS custom properties — sampled from five orchid species */'];
+      for (const v of ['dark', 'light']) {
+        const T = TOKENS[v];
+        out.push('', `/* Orchids ${cap(v)} */`, ':root {');
+        for (const k of ['bg', 'fg', 'comment', 'kw', 'fn', 'type', 'str', 'num', 'op', 'punc', 'deco', 'esc', 'self', 'error', 'cursor', 'selection'])
+          out.push(`  --orchids-${k}: ${T[k]};`);
+        T.ansi.forEach((c, i) => out.push(`  --orchids-ansi-${i}: ${c};`));
+        out.push('}');
       }
-    }]
-  }, null, 2);
-}
-function genIdea(v) {
-  const T = TOKENS[v], h = c => c.replace('#', '');
-  const attr = (name, fg, bg, it) => `    <option name="${name}">\n      <value>\n${fg ? `        <option name="FOREGROUND" value="${h(fg)}" />\n` : ''}${bg ? `        <option name="BACKGROUND" value="${h(bg)}" />\n` : ''}${it ? '        <option name="FONT_TYPE" value="1" />\n' : ''}      </value>\n    </option>`;
-  const attrs = [
-    attr('DEFAULT_KEYWORD', T.kw), attr('DEFAULT_STRING', T.str), attr('DEFAULT_NUMBER', T.num),
-    attr('DEFAULT_CONSTANT', T.num), attr('DEFAULT_FUNCTION_CALL', T.fn), attr('DEFAULT_METHOD_CALL', T.fn),
-    attr('DEFAULT_FUNCTION_DECLARATION', T.fn), attr('DEFAULT_CLASS_NAME', T.type), attr('DEFAULT_CLASS_REFERENCE', T.type),
-    attr('DEFAULT_IDENTIFIER', T.fg), attr('DEFAULT_INSTANCE_FIELD', T.fg), attr('DEFAULT_PARAMETER', T.fg),
-    attr('DEFAULT_LOCAL_VARIABLE', T.fg), attr('DEFAULT_STATIC_FIELD', T.num),
-    attr('DEFAULT_LINE_COMMENT', T.comment, null, 1), attr('DEFAULT_BLOCK_COMMENT', T.comment, null, 1), attr('DEFAULT_DOC_COMMENT', T.comment, null, 1),
-    attr('ANNOTATION_NAME', T.deco), attr('METADATA', T.deco, null, 1),
-    attr('DEFAULT_OPERATION_SIGN', T.op), attr('DEFAULT_PARENTHS', T.punc), attr('DEFAULT_COMMA', T.punc),
-    attr('DEFAULT_SEMICOLON', T.punc), attr('DEFAULT_BRACKETS', T.punc),
-    attr('VALID_STRING_ESCAPE', T.esc), attr('DEFAULT_INVALID_STRING', T.error)
-  ].join('\n');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<scheme name="${T.name}" version="142">\n  <colors>\n    <option name="BACKGROUND" value="${h(T.bg)}" />\n    <option name="TEXT" value="${h(T.fg)}" />\n    <option name="CARET_COLOR" value="${h(T.cursor)}" />\n    <option name="SELECTION_BACKGROUND" value="${h(T.selection)}" />\n    <option name="LINE_NUMBERS_COLOR" value="${h(T.lno)}" />\n    <option name="LINE_NUMBER_ON_CARET_ROW_COLOR" value="${h(T.lna)}" />\n    <option name="GUTTER_BACKGROUND" value="${h(T.bg)}" />\n    <option name="RIGHT_MARGIN_COLOR" value="${h(T.punc)}" />\n  </colors>\n  <attributes>\n${attrs}\n  </attributes>\n</scheme>\n`;
-}
-function genIterm(v) {
-  const T = TOKENS[v], A = T.ansi;
-  const dict = (name, hex) => { const [r, g, b] = hex2rgb(hex);
-    return `  <key>${name}</key>\n  <dict>\n    <key>Color Space</key><string>sRGB</string>\n    <key>Red Component</key><real>${r.toFixed(6)}</real>\n    <key>Green Component</key><real>${g.toFixed(6)}</real>\n    <key>Blue Component</key><real>${b.toFixed(6)}</real>\n  </dict>`; };
-  const entries = [
-    ['Background Color', T.bg], ['Foreground Color', T.fg], ['Cursor Color', T.cursor],
-    ['Cursor Text Color', T.bg], ['Selection Color', T.selection], ['Selected Text Color', T.fg],
-    ...A.map((c, i) => [`Ansi ${i} Color`, c])
-  ].map(e => dict(e[0], e[1])).join('\n');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n${entries}\n</dict>\n</plist>\n`;
-}
-function genAlacritty(v) {
-  const T = TOKENS[v], A = T.ansi;
-  const names = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
-  const blk = p => names.map((n, i) => `${n.padEnd(8)} = "${A[p + i]}"`).join('\n');
-  return `# ${T.name} · Alacritty\n# Palette sampled from five orchid species.\n\n[colors.primary]\nbackground = "${T.bg}"\nforeground = "${T.fg}"\n\n[colors.cursor]\ntext   = "${T.bg}"\ncursor = "${T.cursor}"\n\n[colors.selection]\ntext       = "${T.fg}"\nbackground = "${T.selection}"\n\n[colors.normal]\n${blk(0)}\n\n[colors.bright]\n${blk(8)}\n`;
-}
-function genGhostty(v) {
-  const T = TOKENS[v], A = T.ansi;
-  return `# ${T.name} · Ghostty\n${A.map((c, i) => `palette = ${i}=${c}`).join('\n')}\nbackground = ${T.bg}\nforeground = ${T.fg}\ncursor-color = ${T.cursor}\ncursor-text = ${T.bg}\nselection-background = ${T.selection}\nselection-foreground = ${T.fg}\nsplit-divider-color = ${T.comment}\n`;
-}
-function genKitty(v) {
-  const T = TOKENS[v], A = T.ansi;
-  return `# ${T.name} · Kitty\nforeground            ${T.fg}\nbackground            ${T.bg}\nselection_foreground  ${T.fg}\nselection_background  ${T.selection}\ncursor                ${T.cursor}\ncursor_text_color     ${T.bg}\nurl_color             ${T.type}\nactive_border_color   ${T.kw}\ninactive_border_color ${T.lno}\nbell_border_color     ${T.num}\n\n${A.map((c, i) => `color${String(i).padStart(2)}  ${c}`).join('\n')}\n`;
-}
-function genWT(v) {
-  const T = TOKENS[v], A = T.ansi;
-  const NAMES = ['black','red','green','yellow','blue','magenta','cyan','white','brightBlack','brightRed','brightGreen','brightYellow','brightBlue','brightMagenta','brightCyan','brightWhite'];
-  return JSON.stringify({ name: T.name, background: T.bg, foreground: T.fg, cursorColor: T.cursor, selectionBackground: T.selection,
-    ...Object.fromEntries(A.map((c, i) => [NAMES[i], c])) }, null, 2);
-}
+      copyText(out.join('\n') + '\n');
+      toast('CSS variables copied');
+    });
 
-const TARGETS = [
-  { name: 'VS Code', hint: 'Command Palette → “Preferences: Color Theme” → install from JSON, or drop it in your user themes folder.', file: v => `orchids-${v}-color-theme.json`, mime: 'application/json', gen: genVSCode },
-  { name: 'Zed', hint: 'Save to <code>~/.config/zed/themes/</code>, then pick “Orchids” from the theme selector.', file: v => `orchids-${v}.json`, mime: 'application/json', gen: genZed },
-  { name: 'IntelliJ IDEA', hint: 'Settings → Editor → Color Scheme → ⚙ → Import Scheme. Works across all JetBrains IDEs.', file: v => `Orchids-${cap(v)}.icls`, mime: 'text/xml', gen: genIdea },
-  { name: 'iTerm2', hint: 'Settings → Profiles → Colors → Color Presets → Import…', file: v => `orchids-${v}.itermcolors`, mime: 'text/xml', gen: genIterm },
-  { name: 'Alacritty', hint: 'Point <code>import</code> in <code>alacritty.toml</code> at this file, or paste its sections in.', file: v => `orchids-${v}.toml`, mime: 'text/plain', gen: genAlacritty },
-  { name: 'Ghostty', hint: 'Append to <code>~/.config/ghostty/config</code>.', file: v => `orchids-${v}-ghostty.conf`, mime: 'text/plain', gen: genGhostty },
-  { name: 'Kitty', hint: 'Save to <code>~/.config/kitty/themes/</code>, then <code>kitten themes --reload-in=all Orchids</code>.', file: v => `orchids-${v}.conf`, mime: 'text/plain', gen: genKitty },
-  { name: 'Windows Terminal', hint: 'Settings → Open JSON file → paste the scheme under <code>"schemas"</code>.', file: v => `orchids-${v}-terminal.json`, mime: 'application/json', gen: genWT }
-];
-(function () {
-  const list = $('dlList');
-  TARGETS.forEach(t => {
-    const row = document.createElement('div');
-    row.className = 'dl-row';
-    row.innerHTML = `<div class="dl-name">${t.name}</div><div class="dl-hint">${t.hint}</div>
-      <div class="dl-btns"><button class="chip" data-v="dark">Dark</button><button class="chip" data-v="light">Light</button></div>`;
-    row.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
-      const v = b.dataset.v, name = t.file(v);
-      const blob = new Blob([t.gen(v)], { type: t.mime });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = name; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1500);
-      toast('Saved ' + name);
-    }));
-    list.appendChild(row);
-  });
-})();
+    /* ---------------- theme file generators ---------------- */
+    const hex2rgb = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
 
-/* ---------------- nav scroll-spy ---------------- */
-(function () {
-  const links = {};
-  document.querySelectorAll('nav.nav a').forEach(a => links[a.getAttribute('href').slice(1)] = a);
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) {
-      Object.values(links).forEach(l => l.classList.remove('on'));
-      links[e.target.id] && links[e.target.id].classList.add('on');
+    function genVSCode(v) {
+      const T = TOKENS[v], A = T.ansi;
+      const tc = (scope, fg, style) => ({ scope, settings: style ? { foreground: fg, fontStyle: style } : { foreground: fg } });
+      return JSON.stringify({
+        name: T.name, type: v, semanticHighlighting: true,
+        semanticTokenColors: { function: T.fn, type: T.type, 'variable.constant': T.num, macro: T.deco, 'string.escape': T.esc },
+        colors: {
+          'editor.background': T.bg, 'editor.foreground': T.fg,
+          'editor.lineHighlightBackground': T.lineHl + '80',
+          'editorLineNumber.foreground': T.lno, 'editorLineNumber.activeForeground': T.lna,
+          'editorCursor.foreground': T.cursor, 'editor.selectionBackground': T.selection,
+          'editorIndentGuide.background': T.punc + '40', 'editorIndentGuide.activeBackground': T.punc,
+          'editorWhitespace.foreground': T.punc + '66', 'editorBracketMatch.border': T.deco,
+          'editorWidget.background': T.panel, 'editorSuggestWidget.background': T.panel,
+          'sideBar.background': T.panel, 'activityBar.background': T.bg,
+          'statusBar.background': T.panel, 'statusBar.foreground': T.fg,
+          'titleBar.activeBackground': T.bg, 'menu.background': T.panel,
+          'list.activeSelectionBackground': T.selection,
+          'scrollbarSlider.background': T.punc + '33',
+          'editorError.foreground': T.error, 'editorWarning.foreground': T.warning,
+          'diffEditor.insertedTextBackground': T.added + '22', 'diffEditor.removedTextBackground': T.removed + '22',
+          'gitDecoration.addedResourceForeground': T.added, 'gitDecoration.deletedResourceForeground': T.removed, 'gitDecoration.modifiedResourceForeground': T.changed,
+          'terminal.background': T.bg, 'terminal.foreground': T.fg, 'terminalCursor.foreground': T.cursor,
+          ...Object.fromEntries(A.map((c, i) => ['terminal.ansi' + (i < 8 ? ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White'][i] : 'Bright' + ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White'][i - 8]), c]))
+        },
+        tokenColors: [
+          tc(['comment'], T.comment, 'italic'),
+          tc(['keyword', 'storage.type', 'storage.modifier', 'keyword.control'], T.kw),
+          tc(['entity.name.function', 'support.function', 'variable.function', 'meta.function-call'], T.fn),
+          tc(['entity.name.type', 'entity.name.class', 'support.type', 'support.class', 'entity.name.enum'], T.type),
+          tc(['string'], T.str),
+          tc(['constant.numeric', 'constant.language', 'support.constant', 'variable.other.constant'], T.num),
+          tc(['constant.character.escape'], T.esc),
+          tc(['entity.name.tag'], T.fn),
+          tc(['entity.other.attribute-name', 'meta.decorator'], T.deco, 'italic'),
+          tc(['keyword.operator'], T.op),
+          tc(['punctuation'], T.punc),
+          tc(['invalid'], T.error)
+        ]
+      }, null, 2);
     }
-  }), { rootMargin: '-35% 0px -55% 0px' });
-  document.querySelectorAll('main section[id]').forEach(s => io.observe(s));
-})();
+    function genZed(v) {
+      const T = TOKENS[v];
+      const s = (c, i) => i ? { color: c, font_style: 'italic' } : { color: c };
+      return JSON.stringify({
+        themes: [{
+          name: T.name, appearance: v,
+          style: {
+            background: T.bg, surface: T.panel, 'elevated_surface.background': T.panel,
+            text: T.fg, 'text.muted': T.comment, 'text.accent': T.kw,
+            border: T.line, 'border.focused': T.kw, 'border.selected': T.kw,
+            'element.hover': T.lineHl, 'element.active': T.selection, 'element.selected': T.selection,
+            'editor.background': T.bg, 'editor.foreground': T.fg, 'editor.line_number': T.lno,
+            'editor.active_line': T.lineHl, 'editor.selection': T.selection, cursor: T.cursor,
+            'terminal.background': T.bg, 'terminal.foreground': T.fg,
+            ...Object.fromEntries(T.ansi.map((c, i) => ['terminal.ansi_' + i, c])),
+            link: T.type, created: T.added, deleted: T.removed, modified: T.changed,
+            error: T.error, warning: T.warning, info: T.type, hint: T.comment,
+            syntax: {
+              comment: s(T.comment, 1), string: s(T.str), 'string.escape': s(T.esc),
+              keyword: s(T.kw), function: s(T.fn), type: s(T.type), constructor: s(T.type),
+              number: s(T.num), constant: s(T.num), operator: s(T.op),
+              punctuation: s(T.punc), 'punctuation.bracket': s(T.punc), 'punctuation.delimiter': s(T.punc),
+              variable: s(T.fg), property: s(T.fg), attribute: s(T.deco, 1), tag: s(T.fn), label: s(T.deco)
+            }
+          }
+        }]
+      }, null, 2);
+    }
+    function genIdea(v) {
+      const T = TOKENS[v], h = c => c.replace('#', '');
+      const attr = (name, fg, bg, it) => `    <option name="${name}">\n      <value>\n${fg ? `        <option name="FOREGROUND" value="${h(fg)}" />\n` : ''}${bg ? `        <option name="BACKGROUND" value="${h(bg)}" />\n` : ''}${it ? '        <option name="FONT_TYPE" value="1" />\n' : ''}      </value>\n    </option>`;
+      const attrs = [
+        attr('DEFAULT_KEYWORD', T.kw), attr('DEFAULT_STRING', T.str), attr('DEFAULT_NUMBER', T.num),
+        attr('DEFAULT_CONSTANT', T.num), attr('DEFAULT_FUNCTION_CALL', T.fn), attr('DEFAULT_METHOD_CALL', T.fn),
+        attr('DEFAULT_FUNCTION_DECLARATION', T.fn), attr('DEFAULT_CLASS_NAME', T.type), attr('DEFAULT_CLASS_REFERENCE', T.type),
+        attr('DEFAULT_IDENTIFIER', T.fg), attr('DEFAULT_INSTANCE_FIELD', T.fg), attr('DEFAULT_PARAMETER', T.fg),
+        attr('DEFAULT_LOCAL_VARIABLE', T.fg), attr('DEFAULT_STATIC_FIELD', T.num),
+        attr('DEFAULT_LINE_COMMENT', T.comment, null, 1), attr('DEFAULT_BLOCK_COMMENT', T.comment, null, 1), attr('DEFAULT_DOC_COMMENT', T.comment, null, 1),
+        attr('ANNOTATION_NAME', T.deco), attr('METADATA', T.deco, null, 1),
+        attr('DEFAULT_OPERATION_SIGN', T.op), attr('DEFAULT_PARENTHS', T.punc), attr('DEFAULT_COMMA', T.punc),
+        attr('DEFAULT_SEMICOLON', T.punc), attr('DEFAULT_BRACKETS', T.punc),
+        attr('VALID_STRING_ESCAPE', T.esc), attr('DEFAULT_INVALID_STRING', T.error)
+      ].join('\n');
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<scheme name="${T.name}" version="142">\n  <colors>\n    <option name="BACKGROUND" value="${h(T.bg)}" />\n    <option name="TEXT" value="${h(T.fg)}" />\n    <option name="CARET_COLOR" value="${h(T.cursor)}" />\n    <option name="SELECTION_BACKGROUND" value="${h(T.selection)}" />\n    <option name="LINE_NUMBERS_COLOR" value="${h(T.lno)}" />\n    <option name="LINE_NUMBER_ON_CARET_ROW_COLOR" value="${h(T.lna)}" />\n    <option name="GUTTER_BACKGROUND" value="${h(T.bg)}" />\n    <option name="RIGHT_MARGIN_COLOR" value="${h(T.punc)}" />\n  </colors>\n  <attributes>\n${attrs}\n  </attributes>\n</scheme>\n`;
+    }
+    function genIterm(v) {
+      const T = TOKENS[v], A = T.ansi;
+      const dict = (name, hex) => {
+        const [r, g, b] = hex2rgb(hex);
+        return `  <key>${name}</key>\n  <dict>\n    <key>Color Space</key><string>sRGB</string>\n    <key>Red Component</key><real>${r.toFixed(6)}</real>\n    <key>Green Component</key><real>${g.toFixed(6)}</real>\n    <key>Blue Component</key><real>${b.toFixed(6)}</real>\n  </dict>`;
+      };
+      const entries = [
+        ['Background Color', T.bg], ['Foreground Color', T.fg], ['Cursor Color', T.cursor],
+        ['Cursor Text Color', T.bg], ['Selection Color', T.selection], ['Selected Text Color', T.fg],
+        ...A.map((c, i) => [`Ansi ${i} Color`, c])
+      ].map(e => dict(e[0], e[1])).join('\n');
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n${entries}\n</dict>\n</plist>\n`;
+    }
+    function genAlacritty(v) {
+      const T = TOKENS[v], A = T.ansi;
+      const names = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
+      const blk = p => names.map((n, i) => `${n.padEnd(8)} = "${A[p + i]}"`).join('\n');
+      return `# ${T.name} · Alacritty\n# Palette sampled from five orchid species.\n\n[colors.primary]\nbackground = "${T.bg}"\nforeground = "${T.fg}"\n\n[colors.cursor]\ntext   = "${T.bg}"\ncursor = "${T.cursor}"\n\n[colors.selection]\ntext       = "${T.fg}"\nbackground = "${T.selection}"\n\n[colors.normal]\n${blk(0)}\n\n[colors.bright]\n${blk(8)}\n`;
+    }
+    function genGhostty(v) {
+      const T = TOKENS[v], A = T.ansi;
+      return `# ${T.name} · Ghostty\n${A.map((c, i) => `palette = ${i}=${c}`).join('\n')}\nbackground = ${T.bg}\nforeground = ${T.fg}\ncursor-color = ${T.cursor}\ncursor-text = ${T.bg}\nselection-background = ${T.selection}\nselection-foreground = ${T.fg}\nsplit-divider-color = ${T.comment}\n`;
+    }
+    function genKitty(v) {
+      const T = TOKENS[v], A = T.ansi;
+      return `# ${T.name} · Kitty\nforeground            ${T.fg}\nbackground            ${T.bg}\nselection_foreground  ${T.fg}\nselection_background  ${T.selection}\ncursor                ${T.cursor}\ncursor_text_color     ${T.bg}\nurl_color             ${T.type}\nactive_border_color   ${T.kw}\ninactive_border_color ${T.lno}\nbell_border_color     ${T.num}\n\n${A.map((c, i) => `color${String(i).padStart(2)}  ${c}`).join('\n')}\n`;
+    }
+    function genWT(v) {
+      const T = TOKENS[v], A = T.ansi;
+      const NAMES = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'brightBlack', 'brightRed', 'brightGreen', 'brightYellow', 'brightBlue', 'brightMagenta', 'brightCyan', 'brightWhite'];
+      return JSON.stringify({
+        name: T.name, background: T.bg, foreground: T.fg, cursorColor: T.cursor, selectionBackground: T.selection,
+        ...Object.fromEntries(A.map((c, i) => [NAMES[i], c]))
+      }, null, 2);
+    }
 
-/* ---------------- init ---------------- */
-setPm(document.documentElement.dataset.mode);
-renderCode();
-</script>
+    const TARGETS = [
+      { name: 'VS Code', hint: 'Command Palette → “Preferences: Color Theme” → install from JSON, or drop it in your user themes folder.', file: v => `orchids-${v}-color-theme.json`, mime: 'application/json', gen: genVSCode },
+      { name: 'Zed', hint: 'Save to <code>~/.config/zed/themes/</code>, then pick “Orchids” from the theme selector.', file: v => `orchids-${v}.json`, mime: 'application/json', gen: genZed },
+      { name: 'IntelliJ IDEA', hint: 'Settings → Editor → Color Scheme → ⚙ → Import Scheme. Works across all JetBrains IDEs.', file: v => `Orchids-${cap(v)}.icls`, mime: 'text/xml', gen: genIdea },
+      { name: 'iTerm2', hint: 'Settings → Profiles → Colors → Color Presets → Import…', file: v => `orchids-${v}.itermcolors`, mime: 'text/xml', gen: genIterm },
+      { name: 'Alacritty', hint: 'Point <code>import</code> in <code>alacritty.toml</code> at this file, or paste its sections in.', file: v => `orchids-${v}.toml`, mime: 'text/plain', gen: genAlacritty },
+      { name: 'Ghostty', hint: 'Append to <code>~/.config/ghostty/config</code>.', file: v => `orchids-${v}-ghostty.conf`, mime: 'text/plain', gen: genGhostty },
+      { name: 'Kitty', hint: 'Save to <code>~/.config/kitty/themes/</code>, then <code>kitten themes --reload-in=all Orchids</code>.', file: v => `orchids-${v}.conf`, mime: 'text/plain', gen: genKitty },
+      { name: 'Windows Terminal', hint: 'Settings → Open JSON file → paste the scheme under <code>"schemas"</code>.', file: v => `orchids-${v}-terminal.json`, mime: 'application/json', gen: genWT }
+    ];
+    (function () {
+      const list = $('dlList');
+      TARGETS.forEach(t => {
+        const row = document.createElement('div');
+        row.className = 'dl-row';
+        row.innerHTML = `<div class="dl-name">${t.name}</div><div class="dl-hint">${t.hint}</div>
+      <div class="dl-btns"><button class="chip" data-v="dark">Dark</button><button class="chip" data-v="light">Light</button></div>`;
+        row.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+          const v = b.dataset.v, name = t.file(v);
+          const blob = new Blob([t.gen(v)], { type: t.mime });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+          toast('Saved ' + name);
+        }));
+        list.appendChild(row);
+      });
+    })();
+
+    /* ---------------- nav scroll-spy ---------------- */
+    (function () {
+      const links = {};
+      document.querySelectorAll('nav.nav a').forEach(a => links[a.getAttribute('href').slice(1)] = a);
+      const io = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting) {
+          Object.values(links).forEach(l => l.classList.remove('on'));
+          links[e.target.id] && links[e.target.id].classList.add('on');
+        }
+      }), { rootMargin: '-35% 0px -55% 0px' });
+      document.querySelectorAll('main section[id]').forEach(s => io.observe(s));
+    })();
+
+    /* ---------------- init ---------------- */
+    setPm(document.documentElement.dataset.mode);
+    renderCode();
+
+    /* ---------------- iOS performance optimizations ---------------- */
+    // Reduce animation checks on iOS to improve performance
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+      // Passive event listeners for better scroll performance
+      document.addEventListener('touchstart', function () { }, { passive: true });
+      document.addEventListener('touchmove', function () { }, { passive: true });
+    }
+  </script>
 </body>
+
 </html>
