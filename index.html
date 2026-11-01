@@ -2273,7 +2273,9 @@ fn main() {
           'diffEditor.insertedTextBackground': T.added + '22', 'diffEditor.removedTextBackground': T.removed + '22',
           'gitDecoration.addedResourceForeground': T.added, 'gitDecoration.deletedResourceForeground': T.removed, 'gitDecoration.modifiedResourceForeground': T.changed,
           'terminal.background': T.bg, 'terminal.foreground': T.fg, 'terminalCursor.foreground': T.cursor,
-          ...Object.fromEntries(A.map((c, i) => ['terminal.ansi' + (i < 8 ? ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White'][i] : 'Bright' + ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White'][i - 8]), c]))
+          ...Object.fromEntries(A.map((c, i) => ['terminal.ansi' + (i < 8 ? ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White'][i] : 'Bright' + ['Black', 'Red', 'Green', 'Yellow', 'Blue', 'Magenta', 'Cyan', 'White'][i - 8]), c])),
+          'surface.background': T.panel, 'surface.foreground': T.fg, 'surface.border': T.line,
+          'editor.border': T.line
         },
         tokenColors: [
           tc(['comment'], T.comment, 'italic'),

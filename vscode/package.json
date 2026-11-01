@@ -1,0 +1,59 @@
+{
+  "name": "orchids-theme",
+  "displayName": "Orchids",
+  "description": "A light & dark color theme for VS Code — every hue sampled from five living orchid species.",
+  "version": "1.0.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "theme",
+    "color-theme",
+    "orchids",
+    "light",
+    "dark",
+    "pastel",
+    "nature",
+    "orchid"
+  ],
+  "icon": "icons/icon.png",
+  "gallery": [
+    {
+      "theme": "Orchids Dark",
+      "path": "screenshots/dark.png",
+      "description": "Orchids Dark theme"
+    },
+    {
+      "theme": "Orchids Light",
+      "path": "screenshots/light.png",
+      "description": "Orchids Light theme"
+    }
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "Orchids Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/orchids-dark-color-theme.json"
+      },
+      {
+        "label": "Orchids Light",
+        "uiTheme": "vs",
+        "path": "./themes/orchids-light-color-theme.json"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/orchids-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/orchids-vscode/issues"
+  },
+  "homepage": "https://github.com/your-username/orchids-vscode#readme",
+  "license": "MIT"
+}
