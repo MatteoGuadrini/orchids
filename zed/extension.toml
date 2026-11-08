@@ -1,0 +1,7 @@
+id = "orchids"
+name = "Orchids"
+version = "0.1.0"
+schema_version = 1
+authors = ["Matteo Guadrini"]
+description = "A light & dark color theme for Zed — every hue sampled from five living orchid species."
+repository = "https://github.com/MatteoGuadrini/orchids"
