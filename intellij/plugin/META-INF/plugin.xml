@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+  <id>com.github.mattegrant.orchids</id>
+  <name>Orchids Theme</name>
+  <version>0.1.0</version>
+  <vendor url="https://github.com/MatteoGuadrini/orchids">Matteo Guadrini</vendor>
+  <idea-version since-build="231"/>
+  <depends>com.intellij.modules.platform</depends>
+  <description><![CDATA[
+    Orchids light and dark themes for IntelliJ-based IDEs, generated from
+    the VS Code theme sources. Includes editor color schemes plus New UI
+    and Islands UI theme variants.
+  ]]></description>
+  <extensions defaultExtensionNs="com.intellij">
+    <themeProvider id="com.github.mattegrant.orchids.dark.new" path="/themes/Orchids-Dark.theme.json" targetUi="new"/>
+    <themeProvider id="com.github.mattegrant.orchids.light.new" path="/themes/Orchids-Light.theme.json" targetUi="new"/>
+    <themeProvider id="com.github.mattegrant.orchids.dark.islands" path="/themes/Orchids-Islands-Dark.theme.json" targetUi="islands"/>
+    <themeProvider id="com.github.mattegrant.orchids.light.islands" path="/themes/Orchids-Islands-Light.theme.json" targetUi="islands"/>
+    <bundledColorScheme id="Orchids Dark" path="/themes/Orchids-Dark"/>
+    <bundledColorScheme id="Orchids Light" path="/themes/Orchids-Light"/>
+  </extensions>
+</idea-plugin>

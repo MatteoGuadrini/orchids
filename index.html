@@ -2377,7 +2377,7 @@ fn main() {
     const TARGETS = [
       { name: 'VS Code', hint: 'Command Palette → “Preferences: Color Theme” → install from JSON, or drop it in your user themes folder.', file: v => `orchids-${v}-color-theme.json`, mime: 'application/json', gen: genVSCode },
       { name: 'Zed', hint: 'Save to <code>~/.config/zed/themes/</code>, then pick “Orchids” from the theme selector.', file: v => `orchids-${v}.json`, mime: 'application/json', gen: genZed },
-      { name: 'IntelliJ IDEA', hint: 'Settings → Editor → Color Scheme → ⚙ → Import Scheme. Works across all JetBrains IDEs.', file: v => `Orchids-${cap(v)}.icls`, mime: 'text/xml', gen: genIdea },
+      { name: 'IntelliJ IDEA', hint: 'Editor scheme: Settings → Editor → Color Scheme → ⚙ → Import Scheme. For full New UI/Islands themes, install <code>intellij/dist/Orchids-IntelliJ-Plugin.zip</code> — see <code>intellij/README.md</code>.', file: v => `Orchids-${cap(v)}.icls`, href: v => `intellij/themes/Orchids-${cap(v)}.icls` },
       { name: 'iTerm2', hint: 'Settings → Profiles → Colors → Color Presets → Import…', file: v => `orchids-${v}.itermcolors`, mime: 'text/xml', gen: genIterm },
       { name: 'Alacritty', hint: 'Point <code>import</code> in <code>alacritty.toml</code> at this file, or paste its sections in.', file: v => `orchids-${v}.toml`, mime: 'text/plain', gen: genAlacritty },
       { name: 'Ghostty', hint: 'Append to <code>~/.config/ghostty/config</code>.', file: v => `orchids-${v}-ghostty.conf`, mime: 'text/plain', gen: genGhostty },
@@ -2393,10 +2393,13 @@ fn main() {
       <div class="dl-btns"><button class="chip" data-v="dark">Dark</button><button class="chip" data-v="light">Light</button></div>`;
         row.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
           const v = b.dataset.v, name = t.file(v);
-          const blob = new Blob([t.gen(v)], { type: t.mime });
-          const url = URL.createObjectURL(blob);
+          let url = t.href ? t.href(v) : null, revoke = false;
+          if (!url) {
+            url = URL.createObjectURL(new Blob([t.gen(v)], { type: t.mime }));
+            revoke = true;
+          }
           const a = document.createElement('a'); a.href = url; a.download = name; a.click();
-          setTimeout(() => URL.revokeObjectURL(url), 1500);
+          if (revoke) setTimeout(() => URL.revokeObjectURL(url), 1500);
           toast('Saved ' + name);
         }));
         list.appendChild(row);
