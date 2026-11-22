@@ -43,6 +43,51 @@ Two variants in each editor:
     └── tools/            # VS Code → IntelliJ theme converter
 ```
 
+## Installation
+
+Each editor folder ships its own installable theme. Pick yours:
+
+### VS Code — `vscode/`
+
+1. Open VS Code and go to **Extensions** (`Ctrl+Shift+X`).
+2. Search for **Orchids** and click **Install** — or download a release
+   `.vsix` and use **Install from VSIX...**.
+3. Open the Command Palette (`Ctrl+Shift+P`) → **Preferences: Color Theme**
+   and choose **Orchids Dark** or **Orchids Light**.
+
+Manual alternative: copy `vscode/themes/orchids-{dark,light}-color-theme.json`
+into your VS Code user themes directory and select the theme as above.
+Full details: [`vscode/README.md`](vscode/README.md).
+
+### Zed — `zed/`
+
+1. Open the command palette and run `zed: extensions`.
+2. Search for **Orchids** and install it — or copy
+   `zed/themes/orchids.json` into `~/.config/zed/themes/`.
+3. Pick **Orchids Dark** or **Orchids Light** from the theme selector.
+
+Full details: [`zed/README.md`](zed/README.md).
+
+### IntelliJ-based IDEs — `intellij/`
+
+1. Build the plugin archive if needed:
+
+   ```sh
+   python3 intellij/tools/convert_vscode_theme.py
+   ```
+
+   This produces `intellij/dist/Orchids-IntelliJ-Plugin.zip`.
+2. In IntelliJ IDEA (or another JetBrains IDE), open
+   **Settings → Plugins**, click the gear icon, and choose
+   **Install Plugin from Disk**. Select the ZIP and restart the IDE.
+3. Open **Settings → Appearance & Behavior → Appearance → Theme** and pick
+   **Orchids Dark** / **Orchids Light** (New UI) or **Orchids Islands
+   Dark** / **Orchids Islands Light** (Islands UI).
+
+Editor schemes only: import `intellij/themes/Orchids-{Dark,Light}.icls` via
+**Settings → Editor → Color Scheme → ⚙ → Import Scheme**. Full details:
+[`intellij/README.md`](intellij/README.md).
+
 ## VS Code
 
 See [`vscode/README.md`](vscode/README.md) for installation, customization,
@@ -81,6 +126,21 @@ theme files for VS Code, Zed, IntelliJ, iTerm2, Alacritty, Ghostty, Kitty,
 and Windows Terminal — all generated client-side from the color tokens
 embedded in the page. Open it directly in a browser.
 
-## License
+## Open source
+_Orchids_ is an open source project. Any contribute, It's welcome.
 
-MIT — see [`vscode/LICENSE`](vscode/LICENSE).
+**A great thanks**.
+
+For donations, press this
+
+For me
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.me/guos)
+
+For [Telethon](http://www.telethon.it/)
+
+The Telethon Foundation is a non-profit organization recognized by the Ministry of University and Scientific and Technological Research.
+They were born in 1990 to respond to the appeal of patients suffering from rare diseases.
+Come today, we are organized to dare to listen to them and answers, every day of the year.
+
+[Adopt the future](https://www.ioadottoilfuturo.it/)
